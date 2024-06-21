@@ -1,8 +1,8 @@
 import Query from "../config/database.js";
 
-export async function createCurso({ name, email, age, slug }) {
+export async function createCurso({ name, price }) {
     const novoCurso = await Query(
-        "INSERT INTO cursos(name,email,age,slug) VALUES($1,$2,$3,$4) RETURNING *",
+        "INSERT INTO cursos(name,price) VALUES($1,$2) RETURNING *",
         [name, email, age, slug],
     );
     return novoCurso;
@@ -18,10 +18,18 @@ export async function readCurso(id = null) {
     }
 }
 
-export async function updateCurso({ id, name, age, email, slug }) {
+export async function changeStatus({ id, status }) {
     const curso = await Query(
-        "UPDATE cursos SET name = $1, age = $2, email = $3, slug = $4, WHERE id = $5",
-        [name, age, email, slug, id],
+        "UPDATE cursos SET status = $1 WHERE id = $2",
+        [status, id]
+    );
+    return curso
+}
+
+export async function updateCurso({ id, name, price }) {
+    const curso = await Query(
+        "UPDATE cursos SET name = $1, price = $2 WHERE id = $3",
+        [name, price, id],
     );
     return curso;
 }

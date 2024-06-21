@@ -46,6 +46,11 @@ router.post("/", async (req, res) => {
             return
         }
 
+        if (!data.email) {
+            res.status(400).json({ message: "Por favor inclua um email." })
+            return
+        }
+
         if (!data.slug) {
             data.slug = criarSlug(data.name)
         }
@@ -82,8 +87,8 @@ router.put("/:idAluno", async (req, res) => {
             id: idAluno,
             name: data.name,
             age: data.age,
-            email: data.email,
-            slug: data.slug
+            email: aluno.email,
+            slug: criarSlug(data.name)
         })
 
         console.log("Updated aluno: ", alunoAtualizado)
