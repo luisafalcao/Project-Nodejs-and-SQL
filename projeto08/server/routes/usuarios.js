@@ -1,5 +1,4 @@
 import { Router } from "express";
-import criarSlug from "../config/utils.js"
 import { createUsuario, login } from "../controller/usuario.js"
 
 const router = Router();
@@ -29,7 +28,7 @@ router.post("/", async (req, res) => {
             password: data.password,
             email: data.email,
             name: data.name,
-            age: data.age
+            date_of_birth: data.date_of_birth
         });
 
         res.status(200).json({ message: "Usuário criado com sucesso!", data: novoUsuario })
@@ -70,11 +69,10 @@ router.post("/login", async (req, res) => {
             return
         }
 
+        res.cookie('x-auth', user)
+
         res.status(200).json({
-            message: "Sucesso",
-            data: {
-                token: user
-            }
+            message: "Login feito com sucesso!"
         })
 
     } catch (error) {

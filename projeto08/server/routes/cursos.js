@@ -1,8 +1,24 @@
+import JWT from "jsonwebtoken";
 import { Router } from "express";
-import criarSlug from "../config/utils.js"
 import { createCurso, readCurso, changeStatus, updateCurso, deleteCurso } from "../controller/curso.js"
 
 const router = Router();
+
+router.use((req, res, next) => {
+    const token = req.headers["authorization"].replace("Bearer ", "");
+    try {
+        JWT.verify(token, process.env.SECRET, (err, decode) => {
+            if (err) {
+                res.status(401).json({ message: "Token inválido" })
+                return
+            }
+
+            next()
+        })
+    } catch (error) {
+        res.status(500).json({ message: "Erro ao verificar token" })
+    }
+})
 
 // GET
 router.get("/", async (req, res) => {
@@ -45,10 +61,6 @@ router.post("/", async (req, res) => {
         if (!data.name) {
             res.status(400).json({ message: "Por favor inclua um nome." })
             return
-        }
-
-        if (!data.slug) {
-            data.slug = criarSlug(data.name)
         }
 
         const novoCurso = await createCurso(data);

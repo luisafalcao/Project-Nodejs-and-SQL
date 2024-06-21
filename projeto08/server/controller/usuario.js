@@ -1,15 +1,14 @@
 import Query from "../config/database.js";
 import BCrypt from "bcrypt";
 import JWT from "jsonwebtoken";
+import 'dotenv/config'
 
-const SECRET = "FFD349477A258D2ECAB3CD397E252"
-
-export async function createUsuario({ username, password, email, name, age }) {
+export async function createUsuario({ username, password, email, name, date_of_birth }) {
     const hash_password = BCrypt.hashSync(password, 10);
 
     const novoUsuario = await Query(
-        "INSERT INTO usuario(username, password, email, name, age) VALUES($1,$2,$3,$4,$5) RETURNING *",
-        [username, hash_password, email, name, age],
+        "INSERT INTO usuario(username, password, email, name, date_of_birth) VALUES($1,$2,$3,$4,$5) RETURNING *",
+        [username, hash_password, email, name, date_of_birth],
     );
     return novoUsuario;
 }
@@ -46,7 +45,7 @@ export async function login({ username, password }) {
         name: user.name,
         status: user.status
 
-    }, SECRET, { expiresIn: '1h' })
+    }, process.env.SECRET, { expiresIn: '1h' })
 
     return token;
 }
@@ -61,10 +60,10 @@ export async function login({ username, password }) {
 //     }
 // }
 
-// export async function updateUsuario({ id, name, age, email, slug }) {
+// export async function updateUsuario({ id, name, date_of_birth, email, slug }) {
 //     const usuario = await Query(
-//         "UPDATE usuario SET name = $1, age = $2, email = $3, slug = $4 WHERE id = $5",
-//         [name, age, email, slug, id],
+//         "UPDATE usuario SET name = $1, date_of_birth = $2, email = $3, slug = $4 WHERE id = $5",
+//         [name, date_of_birth, email, slug, id],
 //     );
 //     return usuario;
 // }
