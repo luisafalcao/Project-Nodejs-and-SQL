@@ -1,8 +1,8 @@
-import alunos from "./alunos.js"
+import usuario from "./usuarios.js"
 import cursos from "./cursos.js"
 
 const UseRouter = app => {
-    app.use("/alunos", alunos);
+    app.use("/usuario", usuario);
     app.use("/cursos", cursos);
 }
 
