@@ -1,4 +1,5 @@
 import { Router } from "express";
+import criarSlug from "../config/utils.js"
 import { createCurso, readCurso, changeStatus, updateCurso, deleteCurso } from "../controller/curso.js"
 
 const router = Router();
@@ -44,6 +45,10 @@ router.post("/", async (req, res) => {
         if (!data.name) {
             res.status(400).json({ message: "Por favor inclua um nome." })
             return
+        }
+
+        if (!data.slug) {
+            data.slug = criarSlug(data.name)
         }
 
         const novoCurso = await createCurso(data);

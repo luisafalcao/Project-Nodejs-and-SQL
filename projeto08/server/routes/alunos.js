@@ -1,4 +1,5 @@
 import { Router } from "express";
+import criarSlug from "../config/utils.js"
 import { createAluno, readAluno, updateAluno, deleteAluno } from "../controller/aluno.js"
 
 const router = Router();
@@ -71,17 +72,12 @@ router.put("/:idAluno", async (req, res) => {
         const idAluno = req.params.idAluno;
         const data = req.body
 
-        console.log("idAluno:", idAluno)
-        console.log("PUT request data:", data)
-
         const aluno = await readAluno(idAluno)
 
         if (!aluno.length) {
             res.status(400).json({ message: "Aluno não encontrado" })
             return
         }
-
-        console.log("Existing aluno: ", aluno)
 
         const alunoAtualizado = await updateAluno({
             id: idAluno,
@@ -90,8 +86,6 @@ router.put("/:idAluno", async (req, res) => {
             email: aluno.email,
             slug: criarSlug(data.name)
         })
-
-        console.log("Updated aluno: ", alunoAtualizado)
 
         res.status(200).json({ message: "Sucesso", data: alunoAtualizado })
         return
@@ -122,9 +116,5 @@ router.delete("/:idAluno", async (req, res) => {
         return
     }
 })
-
-function criarSlug(text) {
-    return text.toLowerCase().replace(/ /g, "-")
-}
 
 export default router

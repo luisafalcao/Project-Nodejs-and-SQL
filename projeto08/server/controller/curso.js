@@ -1,9 +1,9 @@
 import Query from "../config/database.js";
 
-export async function createCurso({ name, price }) {
+export async function createCurso({ name, price, available = true, slug }) {
     const novoCurso = await Query(
-        "INSERT INTO cursos(name,price) VALUES($1,$2) RETURNING *",
-        [name, email, age, slug],
+        "INSERT INTO cursos(name,price,available,slug) VALUES($1,$2,$3,$4) RETURNING *",
+        [name, price, available, slug],
     );
     return novoCurso;
 }

@@ -20,7 +20,7 @@ export async function readAluno(id = null) {
 
 export async function updateAluno({ id, name, age, email, slug }) {
     const aluno = await Query(
-        "UPDATE alunos SET name = $1, age = $2, email = $3, slug = $4, WHERE id = $5",
+        "UPDATE alunos SET name = $1, age = $2, email = $3, slug = $4 WHERE id = $5",
         [name, age, email, slug, id],
     );
     return aluno;
