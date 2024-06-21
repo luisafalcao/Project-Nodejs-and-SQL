@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+// import { Container, Row, Col } from "react-grid-system";
 
 export default function Home() {
   const [alunos, setAlunos] = useState([]);
@@ -16,6 +17,13 @@ export default function Home() {
 
   return (
     <main>
+      {/* <Container>
+        <Row>
+          <Col sm={4}>One of three columns</Col>
+          <Col sm={4}>One of three columns</Col>
+          <Col sm={4}>One of three columns</Col>
+        </Row>
+      </Container> */}
       <ul>
         {alunos.map((aluno, index) => {
           return <li key={index}>{aluno.name}</li>;
