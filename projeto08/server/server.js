@@ -1,37 +1,35 @@
-const express = require("express");
-const cors = require("cors")
-const pg = require("pg")
-
-require('dotenv').config()
+import express from "express";
+import cors from "cors";
+import 'dotenv/config'
+import { readAluno, createAluno } from "./controller/aluno.js"
 
 const app = express();
-const port = process.env.DB_PORT;
+const port = process.env.PORT || 3001;  // Ensure this matches the port in your .env file
 
 app.use(cors());
-
-async function bancodedados() {
-    const client = new pg.Client({
-        connectionString: process.env.DB_URL
-    })
-
-    await client.connect();
-
-    const resultado = await client.query("SELECT * FROM alunos;")
-
-    await client.end();
-
-    return resultado.rows
-}
-
-// app.get("/", (req, res) => {
-//     res.json({ message: "Hello", people: ["John", "Joe", "Jim"] })
-// })
+app.use(express.json())
 
 app.get("/", async (req, res) => {
-    const alunos = await bancodedados();
+    const alunos = await readAluno();
     console.log(alunos)
-    res.send({ alunos });
+    res.status(200).send({ alunos });
 });
+
+app.post("/", async (req, res) => {
+    try {
+        const data = req.body;
+
+        console.log(data)
+
+        const novo_aluno = await createAluno(data);
+        res.status(200).json({ message: "Sucesso", data: novo_aluno })
+
+        return
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+        return
+    }
+})
 
 app.listen(port, () => {
     console.log(`Servidor em http://localhost:${port}`)

@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-// import PORT from "../../server/server";
 
 export default function Home() {
-  // const [message, setMessage] = useState("Loading...");
   const [alunos, setAlunos] = useState([]);
 
   useEffect(() => {
@@ -18,7 +16,6 @@ export default function Home() {
 
   return (
     <main>
-      {/* <h2>{message}</h2> */}
       <ul>
         {alunos.map((aluno, index) => {
           return <li key={index}>{aluno.name}</li>;
