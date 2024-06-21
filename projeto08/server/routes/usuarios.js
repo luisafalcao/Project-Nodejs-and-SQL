@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { createUsuario, login } from "../controller/usuario.js"
+import { sendMail, emailBody } from "../config/mailer.js";
 
 const router = Router();
 
@@ -31,7 +32,20 @@ router.post("/", async (req, res) => {
             date_of_birth: data.date_of_birth
         });
 
-        res.status(200).json({ message: "Usuário criado com sucesso!", data: novoUsuario })
+        const body = emailBody('Cadastro concluído!', `Olá ${data.name}, seu cadastro foi concluído com sucesso!`)
+
+        const emailSent = await sendMail({
+            to: data.email,
+            subject: "Bem vindo(a)",
+            ...body
+        }).then(res => {
+            return true
+        }).catch(error => {
+            console.error(error)
+            return error.message
+        })
+
+        res.status(200).json({ message: "Usuário criado com sucesso!", data: novoUsuario, emailSent })
         return
     } catch (error) {
         res.status(500).json({ message: error.message })

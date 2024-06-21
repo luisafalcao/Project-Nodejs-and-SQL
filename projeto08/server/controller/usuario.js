@@ -25,6 +25,17 @@ export async function getUsuario({ username }) {
     }
 }
 
+export async function getUsuarioById(id) {
+    try {
+        const user = await Query(
+            "SELECT * FROM usuario WHERE id = $1",
+            [id]
+        )
+        return user[0]
+    } catch (error) {
+        return null
+    }
+}
 export async function login({ username, password }) {
     const user = await getUsuario({ username })
 
