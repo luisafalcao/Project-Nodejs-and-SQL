@@ -4,7 +4,6 @@ import cookieParser from "cookie-parser";
 import { PrismaClient } from "@prisma/client"
 import Router from "./routes/index.js"
 import isAuth from "./config/auth.js";
-import { emailBody, sendMail } from "./config/mailer.js";
 import 'dotenv/config'
 
 const app = express();
@@ -20,13 +19,15 @@ app.get("/", async (req, res) => {
     const cursos = await prisma.curso.findMany()
 
     res.status(200).json({
-        message: "Hello!",
         data: cursos
     })
 })
 
 app.get("/logado", isAuth, (req, res) => {
-    res.status(200).json({ message: "Você está logado!", username: req.user.username })
+    res.status(200).json({
+        message: "Você está logado!",
+        username: req.user.username
+    })
 })
 
 app.listen(port, () => {

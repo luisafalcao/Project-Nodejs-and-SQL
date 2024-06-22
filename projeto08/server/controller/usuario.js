@@ -6,6 +6,7 @@ import 'dotenv/config'
 export async function createUsuario({ username, password, email, name, date_of_birth }) {
     const hash_password = BCrypt.hashSync(password, 10);
 
+
     const novoUsuario = await Query(
         "INSERT INTO usuario(username, password, email, name, date_of_birth) VALUES($1,$2,$3,$4,$5) RETURNING *",
         [username, hash_password, email, name, date_of_birth],
