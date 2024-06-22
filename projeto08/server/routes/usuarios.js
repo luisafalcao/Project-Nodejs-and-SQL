@@ -1,8 +1,6 @@
 import { Router } from "express";
 import { createUsuario, getUsuario, changePassword, login } from "../controller/usuario.js"
 import { sendMail, emailBody } from "../config/mailer.js";
-import { getUsuarioById } from "../controller/usuario.js";
-import { readCurso } from "../controller/curso.js";
 
 const router = Router();
 
@@ -60,8 +58,8 @@ router.post("/login", async (req, res) => {
     try {
         const data = req.body
 
-        if (!data.username) {
-            res.status(400).json({ message: "Insira seu username." })
+        if (!data.email) {
+            res.status(400).json({ message: "Insira seu email." })
             return
         }
 
@@ -76,12 +74,12 @@ router.post("/login", async (req, res) => {
         }
 
         const user = await login({
-            username: data.username,
+            email: data.email,
             senha: data.senha,
         })
 
         if (!user) {
-            res.status(400).json({ message: "Usuário ou senha inválidos." })
+            res.status(400).json({ message: "Email ou senha inválidos." })
             return
         }
 
@@ -103,7 +101,7 @@ router.post("/recuperar-senha", async (req, res) => {
         const data = req.body
 
         if (!data.username) {
-            res.status(400).json({ message: "Username necessário" })
+            res.status(400).json({ message: "Insira seu username." })
             return
         }
 
@@ -131,11 +129,11 @@ router.post("/recuperar-senha", async (req, res) => {
             return error.message
         })
 
-        res.status(200).json({ message: `Nova senha enviada para ${user.email}`, emailSent })
+        res.status(200).json({ message: `Nova senha enviada para ${user.email}.`, emailSent })
         return
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Ocorreu um erro no servidor" });
+        res.status(400).json({ message: "Ocorreu um erro no servidor." });
     }
 })
 

@@ -29,10 +29,10 @@ export async function getUsuarioById(id) {
 }
 
 // EXIBIR USUARIO POR USERNAME
-export async function getUsuario({ username }) {
+export async function getUsuario({ email }) {
     const user = await Query(
-        "SELECT * FROM usuario WHERE username = $1",
-        [username]
+        "SELECT * FROM usuario WHERE email = $1",
+        [email]
     )
     try {
         return user[0]
@@ -53,8 +53,8 @@ export async function changePassword(id, senha) {
 }
 
 // FAZER LOGIN
-export async function login({ username, senha }) {
-    const user = await getUsuario({ username })
+export async function login({ email, senha }) {
+    const user = await getUsuario({ email })
 
     if (!user) {
         return false;
