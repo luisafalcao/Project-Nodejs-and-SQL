@@ -1,34 +1,39 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Curso from "./components/curso";
+import Navbar from "./components/navbar";
 // import { Container, Row, Col } from "react-grid-system";
 
 export default function Home() {
   const [cursos, setCursos] = useState([]);
 
   useEffect(() => {
-    fetch(`http://localhost:8080/cursos`)
+    fetch(`http://localhost:8080/`)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data.cursos);
-        setCursos(data.cursos);
+        console.log(data.data);
+        setCursos(data.data);
       });
   }, []);
 
   return (
     <main>
-      {/* <Container>
-        <Row>
-          <Col sm={4}>One of three columns</Col>
-          <Col sm={4}>One of three columns</Col>
-          <Col sm={4}>One of three columns</Col>
-        </Row>
-      </Container> */}
-      <ul>
-        {cursos.map((curso, index) => {
-          return <li key={index}>{curso.name}</li>;
-        })}
-      </ul>
+      <Navbar />
+
+      <section className="w-10/12 m-auto">
+        <div className="px-2">
+          <div className="flex -mx-2">
+            {cursos.map((curso, index) => {
+              return (
+                <div key={index} className="w-1/3 px-2">
+                  <Curso data={curso} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
