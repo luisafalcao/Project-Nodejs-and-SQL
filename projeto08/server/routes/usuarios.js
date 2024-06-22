@@ -1,8 +1,10 @@
 import { Router } from "express";
+import { PrismaClient } from "@prisma/client"
 import { createUsuario, getUsuario, changePassword, login } from "../controller/usuario.js"
 import { sendMail, emailBody } from "../config/mailer.js";
 
 const router = Router();
+const prisma = new PrismaClient()
 
 // CADASTRAR USUÁRIO "/usuarios"
 router.post("/", async (req, res) => {
@@ -16,6 +18,17 @@ router.post("/", async (req, res) => {
 
         if (!data.senha) {
             res.status(400).json({ message: "Insira uma senha." })
+            return
+        }
+
+        const emailExistente = await prisma.usuario.findMany({
+            where: {
+                email: data.email
+            }
+        })
+
+        if (emailExistente.length) {
+            res.status(400).json({ message: "O email inserido já está sendo utilizado." })
             return
         }
 
