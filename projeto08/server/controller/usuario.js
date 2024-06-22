@@ -28,7 +28,7 @@ export async function getUsuarioById(id) {
     }
 }
 
-// EXIBIR USUARIO POR USERNAME
+// EXIBIR USUARIO POR EMAIL
 export async function getUsuario({ email }) {
     const user = await Query(
         "SELECT * FROM usuario WHERE email = $1",

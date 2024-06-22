@@ -100,12 +100,12 @@ router.post("/recuperar-senha", async (req, res) => {
     try {
         const data = req.body
 
-        if (!data.username) {
-            res.status(400).json({ message: "Insira seu username." })
+        if (!data.email) {
+            res.status(400).json({ message: "Insira seu email." })
             return
         }
 
-        const user = await getUsuario({ username: data.username })
+        const user = await getUsuario({ email: data.email })
 
         if (!user) {
             res.status(400).json({ message: "Username não cadastrado" })
