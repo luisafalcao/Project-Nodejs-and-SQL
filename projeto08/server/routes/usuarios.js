@@ -12,17 +12,17 @@ router.post("/", async (req, res) => {
         const data = req.body;
 
         if (!data.username) {
-            res.status(400).json({ message: "Username necessário" })
+            res.status(400).json({ message: "Insira um username." })
             return
         }
 
         if (!data.senha) {
-            res.status(400).json({ message: "Senha necessária" })
+            res.status(400).json({ message: "Insira uma senha." })
             return
         }
 
         if (!data.email) {
-            res.status(400).json({ message: "Email necessário" })
+            res.status(400).json({ message: "Insira um email." })
             return
         }
 
@@ -47,7 +47,7 @@ router.post("/", async (req, res) => {
             return error.message
         })
 
-        res.status(200).json({ message: "Usuário criado com sucesso!", data: novoUsuario, emailSent })
+        res.status(200).json({ message: "Usuário cadastrado com sucesso!", data: novoUsuario, emailSent })
         return
     } catch (error) {
         res.status(400).json({ message: error.message })
@@ -61,27 +61,27 @@ router.post("/login", async (req, res) => {
         const data = req.body
 
         if (!data.username) {
-            res.status(400).json({ message: "Username necessário" })
+            res.status(400).json({ message: "Insira seu username." })
             return
         }
 
-        if (!data.password) {
-            res.status(400).json({ message: "Senha necessária" })
+        if (!data.senha) {
+            res.status(400).json({ message: "Insira sua senha." })
             return
         }
 
-        if (data.password.length < 6) {
-            res.status(400).json({ message: "Senha deve ter no mínimo 6 caracteres" })
+        if (data.senha.length < 6) {
+            res.status(400).json({ message: "Sua senha deve ter no mínimo 6 caracteres." })
             return
         }
 
         const user = await login({
             username: data.username,
-            password: data.password,
+            senha: data.senha,
         })
 
         if (!user) {
-            res.status(400).json({ message: "Usuário ou senha inválidos" })
+            res.status(400).json({ message: "Usuário ou senha inválidos." })
             return
         }
 
@@ -92,7 +92,7 @@ router.post("/login", async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        res.status(400).json({ message: error.message })
         return
     }
 })

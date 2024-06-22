@@ -42,25 +42,25 @@ export async function getUsuario({ username }) {
 }
 
 // ALTERAR SENHA
-export async function changePassword(id, password) {
-    const hash_password = BCrypt.hashSync(password, 10);
+export async function changePassword(id, senha) {
+    const hash_password = BCrypt.hashSync(senha, 10);
 
     const novaSenha = await Query(
-        "UPDATE usuario SET password = $1 WHERE id = $2 RETURNING *",
+        "UPDATE usuario SET senha = $1 WHERE id = $2 RETURNING *",
         [hash_password, id],
     );
     return novaSenha;
 }
 
 // FAZER LOGIN
-export async function login({ username, password }) {
+export async function login({ username, senha }) {
     const user = await getUsuario({ username })
 
     if (!user) {
         return false;
     }
 
-    const passwordMatch = BCrypt.compareSync(password, user.password);
+    const passwordMatch = BCrypt.compareSync(senha, user.senha);
 
     if (!passwordMatch) {
         return false;
@@ -70,7 +70,7 @@ export async function login({ username, password }) {
         id: user.id,
         username: user.username,
         email: user.email,
-        name: user.name,
+        nome: user.name,
         status: user.status
 
     }, process.env.SECRET, { expiresIn: '1h' })
