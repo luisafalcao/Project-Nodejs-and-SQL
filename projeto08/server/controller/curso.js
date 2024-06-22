@@ -21,7 +21,7 @@ export async function readCurso(id = null) {
 export async function getCursoByUsuario(usuarioId) {
     try {
         const cursos = await Query(
-            "SELECT curso.id AS curso_id, curso.name AS curso_name, usuario.id AS usuario_id, usuario.name AS usuario_name FROM curso INNER JOIN usuario_curso ON usuario_curso.curso_id = curso.id INNER JOIN usuario ON usuario_curso.usuario_id = usuario.id WHERE usuario_curso.usuario_id = $1",
+            "SELECT curso.id AS curso_id, curso.name AS curso_name FROM curso INNER JOIN usuario_curso ON usuario_curso.curso_id = curso.id INNER JOIN usuario ON usuario_curso.usuario_id = usuario.id WHERE usuario_curso.usuario_id = $1",
             [usuarioId])
 
         console.log(cursos)

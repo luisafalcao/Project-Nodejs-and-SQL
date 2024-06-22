@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { createUsuario, getUsuario, changePassword, login } from "../controller/usuario.js"
 import { sendMail, emailBody } from "../config/mailer.js";
+import { getUsuarioById } from "../controller/usuario.js";
+import { readCurso } from "../controller/curso.js";
 
 const router = Router();
 
@@ -136,5 +138,6 @@ router.post("/recuperar-senha", async (req, res) => {
         res.status(500).json({ message: "Ocorreu um erro no servidor" });
     }
 })
+
 
 export default router

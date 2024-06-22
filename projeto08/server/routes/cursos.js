@@ -5,7 +5,7 @@ import isAuth from "../config/auth.js"
 
 const router = Router();
 
-// GET
+// GET CURSO(S)
 router.get("/", async (req, res) => {
     try {
         const cursos = await readCurso();
@@ -18,18 +18,28 @@ router.get("/", async (req, res) => {
     }
 });
 
+// CURSOS DA PESSOA LOGADA
 router.get("/meus-cursos", isAuth, async (req, res) => {
     try {
         const data = await getCursoByUsuario(req.user.id)
 
-        res.status(200).json({ message: "Sucesso!", data })
+        res.status(200).json({
+            message: "Sucesso!",
+            data: {
+                cursos: data,
+                usuario: {
+                    name: req.user.name
+                }
+            }
+        })
         return
     } catch (error) {
         res.status(500).json({ message: error.message })
         return
     }
 })
-// GET BY ID
+
+// GET CURSO BY ID
 router.get("/:idCurso", async (req, res) => {
     try {
         const idCurso = req.params.idCurso;
@@ -49,8 +59,6 @@ router.get("/:idCurso", async (req, res) => {
     }
 })
 
-// GET BY USER
-router.get("")
 // POST
 // router.post("/", async (req, res) => {
 //     try {

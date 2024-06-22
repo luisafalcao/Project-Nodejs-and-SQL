@@ -2,7 +2,7 @@ import pg from "pg";
 
 export default async function Query(text, value = undefined) {
     const client = new pg.Client({
-        connectionString: process.env.DB_URL
+        connectionString: process.env.DATABASE_URL
     })
     try {
         await client.connect();
