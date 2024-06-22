@@ -36,6 +36,16 @@ export async function getUsuarioById(id) {
         return null
     }
 }
+
+export async function changePassword(id, password) {
+    const hash_password = BCrypt.hashSync(password, 10);
+
+    const novaSenha = await Query(
+        "UPDATE usuario SET password = $1 WHERE id = $2 RETURNING *",
+        [hash_password, id],
+    );
+    return novaSenha;
+}
 export async function login({ username, password }) {
     const user = await getUsuario({ username })
 
@@ -60,6 +70,7 @@ export async function login({ username, password }) {
 
     return token;
 }
+
 
 // export async function readUsuario(id = null) {
 //     if (!id) {

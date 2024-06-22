@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUsuario, login } from "../controller/usuario.js"
+import { createUsuario, getUsuario, changePassword, login } from "../controller/usuario.js"
 import { sendMail, emailBody } from "../config/mailer.js";
 
 const router = Router();
@@ -92,6 +92,48 @@ router.post("/login", async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message })
         return
+    }
+})
+
+// RECUPERAR SENHA
+router.post("/recuperar-senha", async (req, res) => {
+    try {
+        const data = req.body
+
+        if (!data.username) {
+            res.status(400).json({ message: "Username necessário" })
+            return
+        }
+
+        const user = await getUsuario({ username: data.username })
+
+        if (!user) {
+            res.status(400).json({ message: "Username não cadastrado" })
+            return
+        }
+
+        const novaSenha = "12345678"
+
+        await changePassword(user.id, novaSenha)
+
+        const body = emailBody('Recuperação de senha', `Olá ${user.name}, você solicitou uma recuperação de senha! Sua nova senha é <strong>${novaSenha}</strong>.`)
+
+        const emailSent = await sendMail({
+            to: user.email,
+            subject: "Recuperação de senha",
+            ...body
+        }).then(() => {
+            return true
+        }).catch(error => {
+            console.error(error)
+            return error.message
+        })
+
+        res.status(200).json({ message: `Nova senha enviada para ${user.email}`, emailSent })
+        return
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Ocorreu um erro no servidor" });
     }
 })
 

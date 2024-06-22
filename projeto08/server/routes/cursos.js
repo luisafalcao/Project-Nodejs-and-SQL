@@ -4,22 +4,6 @@ import { createCurso, readCurso, changeStatus, updateCurso, deleteCurso } from "
 
 const router = Router();
 
-// router.use((req, res, next) => {
-//     const token = req.headers["authorization"].replace("Bearer ", "");
-//     try {
-//         JWT.verify(token, process.env.SECRET, (err, decode) => {
-//             if (err) {
-//                 res.status(401).json({ message: "Token inválido" })
-//                 return
-//             }
-
-//             next()
-//         })
-//     } catch (error) {
-//         res.status(500).json({ message: "Erro ao verificar token" })
-//     }
-// })
-
 // GET
 router.get("/", async (req, res) => {
     try {
