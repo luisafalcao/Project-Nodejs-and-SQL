@@ -1,31 +1,52 @@
-import Query from "../config/database.js";
+import Database from "../config/database.js";
 
 // CADASTRAR CURSO
-export async function createCurso({ name, price, available = true, slug }) {
-    const novoCurso = await Query(
-        "INSERT INTO curso(name,price,available,slug) VALUES($1,$2,$3,$4) RETURNING *",
-        [name, price, available, slug],
-    );
+export async function createCurso({ nome, descricao, capa, inscricoes, inicio }) {
+    const inicio_formatado = new Date(inicio).toISOString();
+
+    const novoCurso = await Database.curso.create({
+        data: {
+            nome,
+            descricao,
+            capa,
+            inscricoes: Number(inscricoes),
+            inicio: inicio_formatado
+        }
+    })
+
     return novoCurso;
 }
 
-// EXIBIR CURSO POR ID
-export async function readCurso(id = null) {
-    if (!id) {
-        const cursos = await Query("SELECT * FROM curso")
+// GET CURSO POR ID
+export async function getCurso(identificador) {
+    if (!identificador || Object.keys(identificador).length === 0) {
+        const cursos = await Database.curso.findMany();
         return cursos
     } else {
-        const curso = await Query("SELECT * FROM curso WHERE id = $1", [id])
+        const [key, value] = Object.entries(identificador)[0]
+        const curso = await Database.curso.findUnique({
+            where: {
+                [key]: value
+            }
+        })
         return curso
     }
 }
 
-// EXIBIR CURSO POR USUÁRIO
-export async function getCursoByUsuario(usuarioId) {
+// GET CURSO POR USUÁRIO
+export async function getCursoByUsuario({ usuarioId }) {
     try {
-        const cursos = await Query(
-            "SELECT curso.id AS curso_id, curso.name AS curso_name FROM curso INNER JOIN usuario_curso ON usuario_curso.curso_id = curso.id INNER JOIN usuario ON usuario_curso.usuario_id = usuario.id WHERE usuario_curso.usuario_id = $1",
-            [usuarioId])
+        const cursos = await Database.curso.findMany({
+            where: {
+                usuario_curso: {
+                    some: {
+                        usuario: {
+                            id: usuarioId
+                        }
+                    }
+                }
+            }
+        })
 
         console.log(cursos)
         return cursos
@@ -34,26 +55,3 @@ export async function getCursoByUsuario(usuarioId) {
         throw error
     }
 }
-
-// export async function changeStatus({ id, status }) {
-//     const curso = await Query(
-//         "UPDATE curso SET status = $1 WHERE id = $2",
-//         [status, id]
-//     );
-//     return curso
-// }
-
-// export async function updateCurso({ id, name, price }) {
-//     const curso = await Query(
-//         "UPDATE curso SET name = $1, price = $2 WHERE id = $3",
-//         [name, price, id],
-//     );
-//     return curso;
-// }
-
-// export async function deleteCurso(id) {
-//     const curso = await Query("DELETE FROM curso WHERE id = $1 RETURNING *", [
-//         id,
-//     ]);
-//     return curso;
-// }

@@ -1,10 +1,9 @@
 import { Router } from "express";
-import { PrismaClient } from "@prisma/client"
-import { createUsuario, getUsuario, changePassword, login } from "../controller/usuario.js"
+import Database from "../config/database.js"
+import { getUsuario, createUsuario, changePassword, login } from "../controller/usuario.js"
 import { sendMail, emailBody } from "../config/mailer.js";
 
-const router = Router();
-const prisma = new PrismaClient()
+const router = Router()
 
 // CADASTRAR USUÁRIO "/usuarios"
 router.post("/", async (req, res) => {
@@ -21,13 +20,13 @@ router.post("/", async (req, res) => {
             return
         }
 
-        const emailExistente = await prisma.usuario.findMany({
+        const emailExistente = await Database.usuario.findMany({
             where: {
                 email: data.email
             }
         })
 
-        const usernameExistente = await prisma.usuario.findMany({
+        const usernameExistente = await Database.usuario.findMany({
             where: {
                 username: data.username
             }
@@ -132,7 +131,7 @@ router.post("/recuperar-senha", async (req, res) => {
         const user = await getUsuario({ email: data.email })
 
         if (!user) {
-            res.status(400).json({ message: "Username não cadastrado" })
+            res.status(400).json({ message: "Usuário não cadastrado" })
             return
         }
 

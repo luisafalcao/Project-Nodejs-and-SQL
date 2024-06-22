@@ -1,6 +1,6 @@
 import JWT from "jsonwebtoken";
 import 'dotenv/config'
-import { getUsuarioById } from "../controller/usuario.js";
+import { getUsuario } from "../controller/usuario.js";
 
 export default async function isAuth(req, res, next) {
     try {
@@ -14,7 +14,7 @@ export default async function isAuth(req, res, next) {
 
         const decoded = JWT.verify(token.replace("Bearer ", ""), process.env.SECRET);
 
-        const user = await getUsuarioById(decoded.id);
+        const user = await getUsuario({ id: decoded.id });
 
         if (!user) {
             res.status(401).json({ message: "Token inválido" })
