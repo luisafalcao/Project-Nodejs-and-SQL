@@ -27,8 +27,19 @@ router.post("/", async (req, res) => {
             }
         })
 
+        const usernameExistente = await prisma.usuario.findMany({
+            where: {
+                username: data.username
+            }
+        })
+
         if (emailExistente.length) {
             res.status(400).json({ message: "O email inserido já está sendo utilizado." })
+            return
+        }
+
+        if (usernameExistente.length) {
+            res.status(400).json({ message: "O username inserido já está sendo utilizado." })
             return
         }
 
