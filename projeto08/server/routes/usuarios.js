@@ -6,7 +6,7 @@ import { readCurso } from "../controller/curso.js";
 
 const router = Router();
 
-// CRIAR USUÁRIO
+// CADASTRAR USUÁRIO "/usuarios"
 router.post("/", async (req, res) => {
     try {
         const data = req.body;
@@ -16,7 +16,7 @@ router.post("/", async (req, res) => {
             return
         }
 
-        if (!data.password) {
+        if (!data.senha) {
             res.status(400).json({ message: "Senha necessária" })
             return
         }
@@ -28,17 +28,17 @@ router.post("/", async (req, res) => {
 
         const novoUsuario = await createUsuario({
             username: data.username,
-            password: data.password,
+            senha: data.senha,
             email: data.email,
-            name: data.name,
-            date_of_birth: data.date_of_birth
+            nome: data.nome,
+            nascimento: data.nascimento
         });
 
-        const body = emailBody('Cadastro concluído!', `Olá ${data.name}, seu cadastro foi concluído com sucesso!`)
+        const body = emailBody('Cadastro concluído!', `Olá ${data.nome}, seu cadastro foi concluído com sucesso!`)
 
         const emailSent = await sendMail({
             to: data.email,
-            subject: "Bem vindo(a)",
+            subject: "Bem vindo(a)!",
             ...body
         }).then(res => {
             return true
@@ -50,12 +50,12 @@ router.post("/", async (req, res) => {
         res.status(200).json({ message: "Usuário criado com sucesso!", data: novoUsuario, emailSent })
         return
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        res.status(400).json({ message: error.message })
         return
     }
 })
 
-// FAZER AUTENTICAÇÃO
+// FAZER LOGIN "/usuarios/login"
 router.post("/login", async (req, res) => {
     try {
         const data = req.body
@@ -97,7 +97,7 @@ router.post("/login", async (req, res) => {
     }
 })
 
-// RECUPERAR SENHA
+// RECUPERAR SENHA "/usuarios/recuperar-senha"
 router.post("/recuperar-senha", async (req, res) => {
     try {
         const data = req.body
@@ -138,6 +138,5 @@ router.post("/recuperar-senha", async (req, res) => {
         res.status(500).json({ message: "Ocorreu um erro no servidor" });
     }
 })
-
 
 export default router

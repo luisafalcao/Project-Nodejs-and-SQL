@@ -2,7 +2,7 @@ import usuario from "./usuarios.js"
 import cursos from "./cursos.js"
 
 const UseRouter = app => {
-    app.use("/usuario", usuario);
+    app.use("/usuarios", usuario);
     app.use("/cursos", cursos);
 }
 

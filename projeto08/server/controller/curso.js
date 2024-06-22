@@ -1,5 +1,6 @@
 import Query from "../config/database.js";
 
+// CADASTRAR CURSO
 export async function createCurso({ name, price, available = true, slug }) {
     const novoCurso = await Query(
         "INSERT INTO curso(name,price,available,slug) VALUES($1,$2,$3,$4) RETURNING *",
@@ -8,6 +9,7 @@ export async function createCurso({ name, price, available = true, slug }) {
     return novoCurso;
 }
 
+// EXIBIR CURSO POR ID
 export async function readCurso(id = null) {
     if (!id) {
         const cursos = await Query("SELECT * FROM curso")
@@ -18,6 +20,7 @@ export async function readCurso(id = null) {
     }
 }
 
+// EXIBIR CURSO POR USUÁRIO
 export async function getCursoByUsuario(usuarioId) {
     try {
         const cursos = await Query(
@@ -31,6 +34,7 @@ export async function getCursoByUsuario(usuarioId) {
         throw error
     }
 }
+
 // export async function changeStatus({ id, status }) {
 //     const curso = await Query(
 //         "UPDATE curso SET status = $1 WHERE id = $2",
