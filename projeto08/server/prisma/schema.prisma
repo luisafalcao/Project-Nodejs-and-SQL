@@ -32,11 +32,11 @@ model Usuario {
 }
 
 model CursoUsuario {
-  id            Int             @id @default(autoincrement())
-  usuarioId     Int
-  cursoId       Int
-  status        String          @default("active")
-  usuario       Usuario         @relation(fields: [usuarioId], references: [id])
-  curso         Curso           @relation(fields: [cursoId], references: [id])
+  id        Int     @id @default(autoincrement())
+  status    String  @default("active")
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  usuarioId Int     @unique
+  curso     Curso   @relation(fields: [cursoId], references: [id])
+  cursoId   Int     @unique
   @@unique([usuarioId, cursoId])
 }

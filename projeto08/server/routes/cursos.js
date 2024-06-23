@@ -1,6 +1,6 @@
 import { Router } from "express";
 import Database from "../config/database.js"
-import { getCurso, inscreverEmCurso } from "../controller/curso.js"
+import { getCurso, inscreverEmCurso, cancelarInscricaoEmCurso, createCurso } from "../controller/curso.js"
 import isAuth from "../config/auth.js"
 import { converterFormatoData } from "../config/utils.js";
 
@@ -56,6 +56,7 @@ router.get("/", isAuth, async (req, res) => {
     }
 });
 
+
 // FAZER INSCRIÇÃO "/cursos/:idCurso"
 router.post("/:idCurso", isAuth, async (req, res) => {
     try {
@@ -64,7 +65,10 @@ router.post("/:idCurso", isAuth, async (req, res) => {
 
         const inscricao = await inscreverEmCurso(currentUserId, searchedCursoId)
 
-        res.status(200).json({ message: "Inscrição realizada!" })
+        res.status(200).json({
+            message: "Inscrição realizada!",
+            inscricao
+        })
     } catch (error) {
         console.error(error)
         res.status(400).json({ message: error.message })
@@ -83,6 +87,19 @@ router.patch("/:idCurso", isAuth, async (req, res) => {
     } catch (error) {
         console.error(error)
         res.status(400).json({ message: error.message })
+    }
+})
+
+// CRIAR CURSO ---- comentar
+router.post("/criar-curso", async (req, res) => {
+    try {
+        const { nome, descricao, capa, inscricoes, inicio } = req.body;
+
+        const novoCurso = await createCurso({ nome, descricao, capa, inscricoes, inicio });
+
+        res.status(201).json({ message: "Curso criado com sucesso!", curso: novoCurso });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 })
 
@@ -132,43 +149,6 @@ router.patch("/:idCurso", isAuth, async (req, res) => {
 //     } catch (error) {
 //         console.error(error)
 //         res.status(400).json({ message: error.message })
-//     }
-// })
-
-// CADASTRAR CURSOS "/cursos"
-// router.post("/", async (req, res) => {
-//     try {
-//         const data = req.body;
-
-//         if (!data.nome) {
-//             res.status(400).json({ message: "Insira um nome." })
-//             return
-//         }
-
-//         const nomeExistente = await Database.curso.findMany({
-//             where: {
-//                 nome: data.nome
-//             }
-//         })
-
-//         if (nomeExistente.length) {
-//             res.status(400).json({ message: "O username inserido já está sendo utilizado." })
-//             return
-//         }
-
-//         const novoCurso = await createCurso({
-//             nome: data.nome,
-//             descricao: data.descricao,
-//             capa: data.capa,
-//             inscricoes: data.inscricoes,
-//             inicio: data.inicio
-//         });
-
-//         res.status(200).json({ message: "Curso cadastrado com sucesso!", data: novoCurso })
-//         return
-//     } catch (error) {
-//         res.status(400).json({ message: error.message })
-//         return
 //     }
 // })
 

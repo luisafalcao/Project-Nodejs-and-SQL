@@ -3,26 +3,24 @@ import { converterFormatoData } from "../config/utils.js";
 
 // CADASTRAR CURSO
 export async function createCurso({ nome, descricao, capa, inscricoes, inicio }) {
+    try {
+        const data_inicio = await converterFormatoData(inicio)
 
-    const data_inicio = await converterFormatoData(inicio)
-        .then(timestamp => {
-            return timestamp
+        const novoCurso = await Database.curso.create({
+            data: {
+                nome,
+                descricao,
+                capa,
+                inscricoes,
+                inicio: new Date(data_inicio)
+            }
         })
-        .catch(error => {
-            console.error
-        });
 
-    const novoCurso = await Database.curso.create({
-        data: {
-            nome,
-            descricao,
-            capa,
-            inscricoes,
-            inicio: data_inicio
-        }
-    })
-
-    return novoCurso;
+        return novoCurso
+    } catch (error) {
+        console.error('Erro ao criar curso.', error);
+        throw new Error('Erro ao criar curso.');
+    }
 }
 
 // GET CURSO
@@ -101,17 +99,27 @@ export async function getCursoByUsuario({ usuarioId }) {
 
 // INSCREVER EM CURSO
 export async function inscreverEmCurso(currentUserId, searchedCursoId) {
-    const result = await Database.cursoUsuario.create({
-        data: {
-            usuarioId: currentUserId,
-            cursoId: searchedCursoId,
-            status: "inscrito"
-        }
-    })
+    try {
+        const result = await Database.cursoUsuario.create({
+            data: {
+                usuarioId: currentUserId,
+                cursoId: searchedCursoId,
+                status: "inscrito"
+            }
+        })
 
-    return result;
+        return result;
+    } catch (error) {
+        if (error.code === 'P2002') {
+            throw new Error('Usuário já está inscrito neste curso.');
+        } else {
+            console.error('Erro na inscrição. Tente novamente.', error);
+            throw error;
+        }
+    }
 }
 
+// CANCELAR INSCRIÇÃO EM CURSO
 export async function cancelarInscricaoEmCurso(currentUserId, searchedCursoId) {
     const result = await Database.cursoUsuario.updateMany({
         where: {

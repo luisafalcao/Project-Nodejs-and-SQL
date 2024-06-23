@@ -23,6 +23,11 @@ export async function createUsuario({ username, senha, email, nome, nascimento }
             email,
             nome,
             nascimento: new Date(data_nascimento)
+        },
+        select: {
+            nome: true,
+            email: true,
+            username: true
         }
     })
 
@@ -64,7 +69,6 @@ export async function login({ email, senha }) {
         username: user.username,
         email: user.email,
         nome: user.name,
-        status: user.status
 
     }, process.env.SECRET, { expiresIn: '1h' })
 
