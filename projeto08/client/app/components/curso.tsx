@@ -16,7 +16,7 @@ export default function Curso({ data = Array }) {
           <div className="text-gray-900 font-bold text-xl mb-2">
             {data.name}
           </div>
-          <p className="text-gray-700 text-base">R$ {data.price}</p>
+          <p className="text-gray-700 text-base">R$</p>
         </div>
       </div>
     </div>

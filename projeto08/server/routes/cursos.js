@@ -1,6 +1,6 @@
 import { Router } from "express";
 import Database from "../config/database.js"
-import { getCurso, alterarInscricao } from "../controller/curso.js"
+import { getCurso, inscreverEmCurso } from "../controller/curso.js"
 import isAuth from "../config/auth.js"
 import { converterFormatoData } from "../config/utils.js";
 
@@ -62,48 +62,78 @@ router.post("/:idCurso", isAuth, async (req, res) => {
         const searchedCursoId = parseInt(req.params.idCurso)
         const currentUserId = req.user.id
 
-        const curso = await getCurso({ id: searchedCursoId })
+        const inscricao = await inscreverEmCurso(currentUserId, searchedCursoId)
 
-        if (!curso) {
-            res.status(404).json({ message: "O curso procurado não existe." })
-            return
-        }
-
-        const inscricoesAtuais = await Database.curso.findUnique({
-            where: {
-                id: parseInt(searchedCursoId),
-            },
-            select: {
-                usuarios: {
-                    where: {
-                        id: parseInt(currentUserId),
-                    },
-                    select: {
-                        id: true,
-                    },
-                },
-            },
-        });
-
-        if (inscricoesAtuais.usuarios.length > 0) {
-            const result = await alterarInscricao(currentUserId, searchedCursoId, "disconnect", "decrement")
-            res.status(404).json({ message: "Inscrição cancelada." })
-            return
-        }
-
-        const result = await alterarInscricao(currentUserId, searchedCursoId, "connect", "increment")
-
-        res.status(200).json({
-            message: "Inscrição realizada com sucesso!",
-            usuario: result.updatedUsuario,
-            curso: result.updatedCurso,
-        });
-
+        res.status(200).json({ message: "Inscrição realizada!" })
     } catch (error) {
         console.error(error)
         res.status(400).json({ message: error.message })
     }
 })
+
+// CANCELAR INSCRIÇÃO "/cursos/:idCurso"
+router.patch("/:idCurso", isAuth, async (req, res) => {
+    try {
+        const searchedCursoId = parseInt(req.params.idCurso)
+        const currentUserId = req.user.id
+
+        const cancelamento = await cancelarInscricaoEmCurso(currentUserId, searchedCursoId)
+
+        res.status(200).json({ message: "Inscrição cancelada." })
+    } catch (error) {
+        console.error(error)
+        res.status(400).json({ message: error.message })
+    }
+})
+
+// FAZER INSCRIÇÃO "/cursos/:idCurso"
+// router.post("/:idCurso", isAuth, async (req, res) => {
+//     try {
+//         const searchedCursoId = parseInt(req.params.idCurso)
+//         const currentUserId = req.user.id
+
+//         const curso = await getCurso({ id: searchedCursoId })
+
+//         if (!curso) {
+//             res.status(404).json({ message: "O curso procurado não existe." })
+//             return
+//         }
+
+//         const inscricoesAtuais = await Database.curso.findUnique({
+//             where: {
+//                 id: parseInt(searchedCursoId),
+//             },
+//             select: {
+//                 usuarios: {
+//                     where: {
+//                         id: parseInt(currentUserId),
+//                     },
+//                     select: {
+//                         id: true,
+//                     },
+//                 },
+//             },
+//         });
+
+//         if (inscricoesAtuais.usuarios.length > 0) {
+//             const result = await alterarInscricao(currentUserId, searchedCursoId, "disconnect", "decrement")
+//             res.status(404).json({ message: "Inscrição cancelada." })
+//             return
+//         }
+
+//         const result = await alterarInscricao(currentUserId, searchedCursoId, "connect", "increment")
+
+//         res.status(200).json({
+//             message: "Inscrição realizada com sucesso!",
+//             usuario: result.updatedUsuario,
+//             curso: result.updatedCurso,
+//         });
+
+//     } catch (error) {
+//         console.error(error)
+//         res.status(400).json({ message: error.message })
+//     }
+// })
 
 // CADASTRAR CURSOS "/cursos"
 // router.post("/", async (req, res) => {

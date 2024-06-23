@@ -63,38 +63,65 @@ export async function getCursoByUsuario({ usuarioId }) {
 }
 
 // ALTERAR INSCRIÇÃO
-export async function alterarInscricao(currentUserId, searchedCursoId, tableAction, colAction) {
-    const result = await Database.$transaction(async (Database) => {
-        const updatedUsuario = await Database.usuario.update({
-            where: {
-                id: currentUserId
-            },
-            data: {
-                cursos: {
-                    [tableAction]: {
-                        id: searchedCursoId
-                    }
-                }
-            },
-            select: {
-                nome: true
-            }
-        })
+// export async function alterarInscricao(currentUserId, searchedCursoId, tableAction, colAction) {
+//     const result = await Database.$transaction(async (Database) => {
+//         const updatedUsuario = await Database.usuario.update({
+//             where: {
+//                 id: currentUserId
+//             },
+//             data: {
+//                 cursos: {
+//                     [tableAction]: {
+//                         id: searchedCursoId
+//                     }
+//                 }
+//             },
+//             select: {
+//                 nome: true
+//             }
+//         })
 
-        const updatedCurso = await Database.curso.update({
-            where: {
-                id: searchedCursoId
-            },
-            data: {
-                inscricoes: {
-                    [colAction]: 1
-                }
-            }
-        })
+//         const updatedCurso = await Database.curso.update({
+//             where: {
+//                 id: searchedCursoId
+//             },
+//             data: {
+//                 inscricoes: {
+//                     [colAction]: 1
+//                 }
+//             }
+//         })
 
-        return { updatedUsuario, updatedCurso }
+//         return { updatedUsuario, updatedCurso }
+//     })
+
+//     return result
+// }
+
+
+// INSCREVER EM CURSO
+export async function inscreverEmCurso(currentUserId, searchedCursoId) {
+    const result = await Database.cursoUsuario.create({
+        data: {
+            usuarioId: currentUserId,
+            cursoId: searchedCursoId,
+            status: "inscrito"
+        }
+    })
+
+    return result;
+}
+
+export async function cancelarInscricaoEmCurso(currentUserId, searchedCursoId) {
+    const result = await Database.cursoUsuario.updateMany({
+        where: {
+            usuarioId: currentUserId,
+            cursoId: searchedCursoId
+        },
+        data: {
+            status: "cancelado"
+        }
     })
 
     return result
 }
-
