@@ -7,7 +7,7 @@ export default async function isAuth(req, res, next) {
         const token = req.headers["authorization"] || "";
 
         if (!token) {
-            res.status(401).json({ message: "Token inválido" })
+            res.status(403).json({ message: "Faça login para acessar o conteúdo desta página." })
             res.end();
             return
         }
@@ -26,7 +26,7 @@ export default async function isAuth(req, res, next) {
 
         next()
     } catch (error) {
-        res.status(401).json({ message: error })
+        res.status(403).json({ message: "Faça login para acessar o conteúdo desta página." })
         res.end()
         return
     }

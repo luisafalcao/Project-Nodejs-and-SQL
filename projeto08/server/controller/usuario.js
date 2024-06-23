@@ -57,7 +57,7 @@ export async function login({ email, senha }) {
         nome: user.name,
         status: user.status
 
-    }, process.env.SECRET, { expiresIn: '1h' })
+    }, process.env.SECRET, { expiresIn: '1m' })
 
     return token;
 }
