@@ -34,7 +34,7 @@ app.get("/:idUsuario", isAuth, async (req, res) => {
         const data = await getCursoByUsuario({ currentUserId })
 
         if (currentUserId !== searchedId) {
-            res.status(403).json({ message: `Você não tem permissão para visualizar os cursos do usuário de ID ${searchedId}` })
+            res.status(403).json({ message: `Você não tem permissão para visualizar os cursos do usuário deste usuário` })
             return
         }
 

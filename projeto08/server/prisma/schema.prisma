@@ -16,7 +16,7 @@ model curso {
   inicio        String
   created_at    DateTime?       @default(now()) @db.Timestamp(6)
   updated_at    DateTime?       @default(now()) @db.Timestamp(6)
-  usuarios      usuario[]
+  usuarios      usuario[] @relation("CursoUsuarios")
 }
 
 model usuario {
@@ -29,5 +29,5 @@ model usuario {
   status        Boolean?        @default(true)
   created_at    DateTime?       @default(now()) @db.Timestamp(6)
   updated_at    DateTime?       @default(now()) @db.Timestamp(6)
-  cursos        curso[]
+  cursos        curso[]         @relation("CursoUsuarios")
 }

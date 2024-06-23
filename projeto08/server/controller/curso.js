@@ -51,3 +51,40 @@ export async function getCursoByUsuario({ usuarioId }) {
         throw error;
     }
 }
+
+// FAZER INSCRIÇÃO
+export async function alterarInscricao(currentUserId, searchedCursoId, tableAction, colAction) {
+    const result = await Database.$transaction(async (Database) => {
+        const updatedUsuario = await Database.usuario.update({
+            where: {
+                id: currentUserId
+            },
+            data: {
+                cursos: {
+                    [tableAction]: {
+                        id: searchedCursoId
+                    }
+                }
+            },
+            select: {
+                nome: true
+            }
+        })
+
+        const updatedCurso = await Database.curso.update({
+            where: {
+                id: searchedCursoId
+            },
+            data: {
+                inscricoes: {
+                    [colAction]: 1
+                }
+            }
+        })
+
+        return { updatedUsuario, updatedCurso }
+    })
+
+    return result
+}
+

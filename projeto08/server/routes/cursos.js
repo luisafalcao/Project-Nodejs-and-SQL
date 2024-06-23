@@ -1,24 +1,43 @@
 import { Router } from "express";
 import Database from "../config/database.js"
-import { getCurso } from "../controller/curso.js"
+import { getCurso, alterarInscricao } from "../controller/curso.js"
 import isAuth from "../config/auth.js"
-import { getUsuario } from "../controller/usuario.js";
 
 const router = Router();
 
 // GET CURSOS "/cursos"
-router.get("/", async (req, res) => {
+router.get("/", isAuth, async (req, res) => {
     try {
-        const cursos = await Database.curso.findMany({
+        const currentUserId = req.user.id
+
+        const conexoes = await Database.curso.findMany({
             select: {
                 nome: true,
                 descricao: true,
-                inicio: true
+                inicio: true,
+                inscricoes: true,
+                usuarios: {
+                    where: {
+                        id: currentUserId,
+                    },
+                    select: {
+                        id: true,
+                    },
+                },
             },
             orderBy: {
                 nome: 'asc'
             }
         })
+
+        // Map over cursos to add connectedToCurrentUser field
+        const cursos = conexoes.map(curso => {
+            const { usuarios, ...rest } = curso;
+            return {
+                ...rest,
+                inscrito: curso.usuarios.length > 0, // Check if usuarios array includes current user
+            }
+        });
 
         res.status(200).json({
             data: cursos
@@ -44,39 +63,36 @@ router.post("/:idCurso", isAuth, async (req, res) => {
             return
         }
 
-        const usuario = await getUsuario({ id: currentUserId })
-
-        if (!usuario) {
-            res.status(404).json({ message: "O usuário não existe." })
-            return
-        }
-
-        // const usuarioNaoInscrito = await Database.usuario.findMany({
-        //     where: {
-        //         OR: [{}]
-        //     }
-        // })
-
-        const records = await prisma.record.findMany({
+        const inscricoesAtuais = await Database.curso.findUnique({
             where: {
-                OR: [{ myColumn: null }, { myColumn: "" }],
+                id: parseInt(searchedCursoId),
             },
-        });
-
-        const updatedUsuario = await Database.usuario.update({
-            where: { id: currentUserId },
-            data: {
-                cursos: {
-                    connect: { id: searchedCursoId },
+            select: {
+                usuarios: {
+                    where: {
+                        id: parseInt(currentUserId),
+                    },
+                    select: {
+                        id: true,
+                    },
                 },
             },
         });
 
+        if (inscricoesAtuais.usuarios.length > 0) {
+            const result = await alterarInscricao(currentUserId, searchedCursoId, "disconnect", "decrement")
+            res.status(404).json({ message: "Inscrição cancelada." })
+            return
+        }
+
+        const result = await alterarInscricao(currentUserId, searchedCursoId, "connect", "increment")
+
         res.status(200).json({
-            message: "Sucesso! Inscrição realizada.",
-            usuario: updatedUsuario,
-            curso: curso,
+            message: "Inscrição realizada com sucesso!",
+            usuario: result.updatedUsuario,
+            curso: result.updatedCurso,
         });
+
     } catch (error) {
         console.error(error)
         res.status(400).json({ message: error.message })
