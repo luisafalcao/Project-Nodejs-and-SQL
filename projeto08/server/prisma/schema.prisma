@@ -13,7 +13,7 @@ model curso {
   descricao     String
   capa          String
   inscricoes    Int
-  inicio        String
+  inicio        DateTime?
   created_at    DateTime?       @default(now()) @db.Timestamp(6)
   updated_at    DateTime?       @default(now()) @db.Timestamp(6)
   usuarios      usuario[] @relation("CursoUsuarios")
@@ -25,7 +25,7 @@ model usuario {
   username      String          @unique
   senha         String
   email         String          @unique
-  nascimento    String       
+  nascimento    DateTime?       
   status        Boolean?        @default(true)
   created_at    DateTime?       @default(now()) @db.Timestamp(6)
   updated_at    DateTime?       @default(now()) @db.Timestamp(6)

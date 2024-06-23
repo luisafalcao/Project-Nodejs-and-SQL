@@ -1,7 +1,16 @@
 import Database from "../config/database.js";
+import { converterFormatoData } from "../config/utils.js";
 
 // CADASTRAR CURSO
 export async function createCurso({ nome, descricao, capa, inscricoes, inicio }) {
+
+    const data_inicio = await converterFormatoData(inicio)
+        .then(timestamp => {
+            return timestamp
+        })
+        .catch(error => {
+            console.error
+        });
 
     const novoCurso = await Database.curso.create({
         data: {
@@ -9,7 +18,7 @@ export async function createCurso({ nome, descricao, capa, inscricoes, inicio })
             descricao,
             capa,
             inscricoes,
-            inicio
+            inicio: data_inicio
         }
     })
 
@@ -30,6 +39,7 @@ export async function getCurso(identificador) {
         })
         return curso
     }
+
 }
 
 // GET CURSO POR USUÁRIO
@@ -52,7 +62,7 @@ export async function getCursoByUsuario({ usuarioId }) {
     }
 }
 
-// FAZER INSCRIÇÃO
+// ALTERAR INSCRIÇÃO
 export async function alterarInscricao(currentUserId, searchedCursoId, tableAction, colAction) {
     const result = await Database.$transaction(async (Database) => {
         const updatedUsuario = await Database.usuario.update({

@@ -2,6 +2,7 @@ import { Router } from "express";
 import Database from "../config/database.js"
 import { getCurso, alterarInscricao } from "../controller/curso.js"
 import isAuth from "../config/auth.js"
+import { converterFormatoData } from "../config/utils.js";
 
 const router = Router();
 
@@ -11,6 +12,11 @@ router.get("/", isAuth, async (req, res) => {
         const currentUserId = req.user.id
 
         const data = await Database.curso.findMany({
+            where: {
+                inicio: {
+                    gte: new Date()
+                }
+            },
             select: {
                 nome: true,
                 descricao: true,
@@ -30,19 +36,20 @@ router.get("/", isAuth, async (req, res) => {
             }
         })
 
-        const cursos = data.map(curso => {
-            const { usuarios, ...rest } = curso;
+        const cursos = await Promise.all(data.map(async (curso) => {
+            const { usuarios, inicio, created_at, updated_at, ...rest } = curso;
+            const data_inicio = await converterFormatoData(inicio)
+
             return {
                 ...rest,
-                inscrito: curso.usuarios.length > 0,
+                inicio: data_inicio,
+                inscrito: usuarios.length > 0,
             }
-        });
+        }));
 
         res.status(200).json({
             data: cursos
         });
-
-        return
     } catch (err) {
         res.status(500).json({ message: err.message })
         return

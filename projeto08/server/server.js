@@ -5,6 +5,7 @@ import { PrismaClient } from "@prisma/client"
 import Router from "./routes/index.js"
 import isAuth from "./config/auth.js";
 import { getCursoByUsuario } from "./controller/curso.js";
+import { converterFormatoData } from "./config/utils.js";
 import 'dotenv/config'
 
 const app = express();
@@ -18,10 +19,26 @@ app.use(cookieParser())
 Router(app);
 
 app.get("/", async (req, res) => {
-    const cursos = await prisma.curso.findMany()
+    const cursos = await prisma.curso.findMany({
+        where: {
+            inicio: {
+                gte: new Date()
+            }
+        }
+    })
+
+    const datasFormatadas = await Promise.all(cursos.map(async (curso) => {
+        const { usuarios, inicio, created_at, updated_at, ...rest } = curso;
+        const data_inicio = await converterFormatoData(inicio)
+
+        return {
+            ...rest,
+            inicio: data_inicio,
+        }
+    }));
 
     res.status(200).json({
-        data: cursos
+        data: datasFormatadas
     })
 })
 

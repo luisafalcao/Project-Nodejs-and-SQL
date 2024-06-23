@@ -1,4 +1,5 @@
 import Database from "../config/database.js"
+import { converterFormatoData } from "../config/utils.js";
 import BCrypt from "bcrypt";
 import JWT from "jsonwebtoken";
 import 'dotenv/config'
@@ -7,13 +8,21 @@ import 'dotenv/config'
 export async function createUsuario({ username, senha, email, nome, nascimento }) {
     const hash_password = BCrypt.hashSync(senha, 10);
 
+    const data_nascimento = await converterFormatoData(nascimento)
+        .then(timestamp => {
+            return timestamp
+        })
+        .catch(error => {
+            console.error
+        });
+
     const novoUsuario = await Database.usuario.create({
         data: {
             username,
             senha: hash_password,
             email,
             nome,
-            nascimento
+            nascimento: new Date(data_nascimento)
         }
     })
 
@@ -57,7 +66,7 @@ export async function login({ email, senha }) {
         nome: user.name,
         status: user.status
 
-    }, process.env.SECRET, { expiresIn: '1m' })
+    }, process.env.SECRET, { expiresIn: '1h' })
 
     return token;
 }
