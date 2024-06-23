@@ -1,6 +1,6 @@
 import { Router } from "express";
 import Database from "../config/database.js"
-import { getCurso, inscreverEmCurso, cancelarInscricaoEmCurso, createCurso } from "../controller/curso.js"
+import { inscreverEmCurso, cancelarInscricaoEmCurso, createCurso } from "../controller/curso.js"
 import isAuth from "../config/auth.js"
 import { converterFormatoData } from "../config/utils.js";
 
@@ -56,6 +56,19 @@ router.get("/", isAuth, async (req, res) => {
     }
 });
 
+// CRIAR CURSO "/cursos/criar-curso" ---- comentar
+// router.post("/criar-curso", async (req, res) => {
+//     try {
+//         const { nome, descricao, capa, inscricoes, inicio } = req.body;
+
+//         const novoCurso = await createCurso({ nome, descricao, capa, inscricoes, inicio });
+
+//         res.status(201).json({ message: "Curso criado com sucesso!", curso: novoCurso });
+//     } catch (error) {
+//         console.log("erro:", error.message)
+//         res.status(400).json({ message: error.message });
+//     }
+// })
 
 // FAZER INSCRIÇÃO "/cursos/:idCurso"
 router.post("/:idCurso", isAuth, async (req, res) => {
@@ -71,7 +84,7 @@ router.post("/:idCurso", isAuth, async (req, res) => {
         })
     } catch (error) {
         console.error(error)
-        res.status(400).json({ message: error.message })
+        res.status(400).json({ message: "Você já está inscrito(a) neste curso." })
     }
 })
 
@@ -90,18 +103,7 @@ router.patch("/:idCurso", isAuth, async (req, res) => {
     }
 })
 
-// CRIAR CURSO ---- comentar
-router.post("/criar-curso", async (req, res) => {
-    try {
-        const { nome, descricao, capa, inscricoes, inicio } = req.body;
 
-        const novoCurso = await createCurso({ nome, descricao, capa, inscricoes, inicio });
-
-        res.status(201).json({ message: "Curso criado com sucesso!", curso: novoCurso });
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-})
 
 // FAZER INSCRIÇÃO "/cursos/:idCurso"
 // router.post("/:idCurso", isAuth, async (req, res) => {

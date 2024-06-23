@@ -43,59 +43,38 @@ export async function getCurso(identificador) {
 // GET CURSO POR USUÁRIO
 export async function getCursoByUsuario({ usuarioId }) {
     try {
-        const cursos = await Database.curso.findMany({
+        const cursosInscritos = await Database.cursoUsuario.findMany({
             where: {
-                usuarios: {
-                    some: {
-                        id: usuarioId
+                AND: {
+                    usuarioId: {
+                        equals: usuarioId
+                    },
+                    status: {
+                        equals: "inscrito"
                     }
                 }
             }
         });
 
-        return cursos;
+        const cursosCancelados = await Database.cursoUsuario.findMany({
+            where: {
+                AND: {
+                    usuarioId: {
+                        equals: usuarioId
+                    },
+                    status: {
+                        equals: "cancelado"
+                    }
+                }
+            }
+        })
+
+        return { cursosInscritos, cursosCancelados };
     } catch (error) {
         console.error(error);
         throw error;
     }
 }
-
-// ALTERAR INSCRIÇÃO
-// export async function alterarInscricao(currentUserId, searchedCursoId, tableAction, colAction) {
-//     const result = await Database.$transaction(async (Database) => {
-//         const updatedUsuario = await Database.usuario.update({
-//             where: {
-//                 id: currentUserId
-//             },
-//             data: {
-//                 cursos: {
-//                     [tableAction]: {
-//                         id: searchedCursoId
-//                     }
-//                 }
-//             },
-//             select: {
-//                 nome: true
-//             }
-//         })
-
-//         const updatedCurso = await Database.curso.update({
-//             where: {
-//                 id: searchedCursoId
-//             },
-//             data: {
-//                 inscricoes: {
-//                     [colAction]: 1
-//                 }
-//             }
-//         })
-
-//         return { updatedUsuario, updatedCurso }
-//     })
-
-//     return result
-// }
-
 
 // INSCREVER EM CURSO
 export async function inscreverEmCurso(currentUserId, searchedCursoId) {
@@ -110,12 +89,8 @@ export async function inscreverEmCurso(currentUserId, searchedCursoId) {
 
         return result;
     } catch (error) {
-        if (error.code === 'P2002') {
-            throw new Error('Usuário já está inscrito neste curso.');
-        } else {
-            console.error('Erro na inscrição. Tente novamente.', error);
-            throw error;
-        }
+        console.error('Erro na inscrição. Tente novamente.', error);
+        throw error;
     }
 }
 

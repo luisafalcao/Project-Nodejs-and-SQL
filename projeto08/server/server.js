@@ -18,6 +18,7 @@ app.use(cookieParser())
 
 Router(app);
 
+// HOME "/"
 app.get("/", async (req, res) => {
     const cursos = await prisma.curso.findMany({
         where: {
@@ -55,19 +56,16 @@ app.get("/:idUsuario", isAuth, async (req, res) => {
             return
         }
 
-        const cursos = data.map(curso => {
-            const { created_at, updated_at, ...rest } = curso;
-            return {
-                ...rest,
-                inscricao_cancelada: false,
-                inscrito: true
-            }
-        });
+        // const cursos = data.map(curso => {
+        //     const { created_at, updated_at, ...rest } = curso;
+        //     return {
+        //         ...rest
+        //     }
+        // });
 
         res.status(200).json({
-            message: "Sucesso!",
             data: {
-                cursos,
+                data,
                 usuario: {
                     name: req.user.nome
                 }
