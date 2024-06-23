@@ -1,8 +1,9 @@
 // import JWT from "jsonwebtoken";
 import { Router } from "express";
 import Database from "../config/database.js"
-import { getCursoByUsuario } from "../controller/curso.js"
+import { getCurso } from "../controller/curso.js"
 import isAuth from "../config/auth.js"
+import { getUsuario } from "../controller/usuario.js";
 
 const router = Router();
 
@@ -21,6 +22,46 @@ router.get("/", async (req, res) => {
         return
     }
 });
+
+// FAZER INSCRIÇÃO "/cursos/:idCurso"
+router.post("/:idCurso", isAuth, async (req, res) => {
+    try {
+        const searchedCursoId = parseInt(req.params.idCurso)
+        const currentUserId = req.user.id
+
+        const curso = await getCurso({ id: searchedCursoId })
+
+        if (!curso) {
+            res.status(404).json({ message: "O curso procurado não existe." })
+            return
+        }
+
+        const usuario = await getUsuario({ id: currentUserId })
+
+        if (!usuario) {
+            res.status(404).json({ message: "O usuário não existe." })
+            return
+        }
+
+        const updatedUsuario = await Database.usuario.update({
+            where: { id: currentUserId },
+            data: {
+                cursos: {
+                    connect: { id: searchedCursoId },
+                },
+            },
+        });
+
+        res.status(200).json({
+            message: "Sucesso! Inscrição realizada.",
+            usuario: updatedUsuario,
+            curso: curso,
+        });
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
 
 // CADASTRAR CURSOS "/cursos"
 // router.post("/", async (req, res) => {

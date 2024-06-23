@@ -17,7 +17,7 @@ export async function createCurso({ nome, descricao, capa, inscricoes, inicio })
     return novoCurso;
 }
 
-// GET CURSO POR ID
+// GET CURSO
 export async function getCurso(identificador) {
     if (!identificador || Object.keys(identificador).length === 0) {
         const cursos = await Database.curso.findMany();
@@ -38,20 +38,17 @@ export async function getCursoByUsuario({ usuarioId }) {
     try {
         const cursos = await Database.curso.findMany({
             where: {
-                usuario_curso: {
+                usuarios: {
                     some: {
-                        usuario: {
-                            id: usuarioId
-                        }
+                        id: usuarioId
                     }
                 }
             }
-        })
+        });
 
-        console.log(cursos)
-        return cursos
+        return cursos;
     } catch (error) {
-        console.error(error)
-        throw error
+        console.error(error);
+        throw error;
     }
 }
