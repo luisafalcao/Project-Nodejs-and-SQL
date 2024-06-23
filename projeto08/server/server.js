@@ -38,10 +38,19 @@ app.get("/:idUsuario", isAuth, async (req, res) => {
             return
         }
 
+        const cursos = data.map(curso => {
+            const { created_at, updated_at, ...rest } = curso;
+            return {
+                ...rest,
+                inscricao_cancelada: false,
+                inscrito: true
+            }
+        });
+
         res.status(200).json({
             message: "Sucesso!",
             data: {
-                cursos: data,
+                cursos,
                 usuario: {
                     name: req.user.nome
                 }

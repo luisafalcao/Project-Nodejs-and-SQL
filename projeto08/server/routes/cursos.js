@@ -10,7 +10,7 @@ router.get("/", isAuth, async (req, res) => {
     try {
         const currentUserId = req.user.id
 
-        const conexoes = await Database.curso.findMany({
+        const data = await Database.curso.findMany({
             select: {
                 nome: true,
                 descricao: true,
@@ -30,12 +30,11 @@ router.get("/", isAuth, async (req, res) => {
             }
         })
 
-        // Map over cursos to add connectedToCurrentUser field
-        const cursos = conexoes.map(curso => {
+        const cursos = data.map(curso => {
             const { usuarios, ...rest } = curso;
             return {
                 ...rest,
-                inscrito: curso.usuarios.length > 0, // Check if usuarios array includes current user
+                inscrito: curso.usuarios.length > 0,
             }
         });
 
