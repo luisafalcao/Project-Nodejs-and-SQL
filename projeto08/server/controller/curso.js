@@ -41,13 +41,13 @@ export async function getCurso(identificador) {
 }
 
 // GET CURSO POR USUÁRIO
-export async function getCursoByUsuario({ usuarioId }) {
+export async function getCursoByUsuario(id) {
     try {
         const cursosInscritos = await Database.cursoUsuario.findMany({
             where: {
                 AND: {
                     usuarioId: {
-                        equals: usuarioId
+                        equals: id
                     },
                     status: {
                         equals: "inscrito"
@@ -60,7 +60,7 @@ export async function getCursoByUsuario({ usuarioId }) {
             where: {
                 AND: {
                     usuarioId: {
-                        equals: usuarioId
+                        equals: id
                     },
                     status: {
                         equals: "cancelado"
@@ -83,7 +83,13 @@ export async function inscreverEmCurso(currentUserId, searchedCursoId) {
             data: {
                 usuarioId: currentUserId,
                 cursoId: searchedCursoId,
-                status: "inscrito"
+                status: "inscrito",
+            },
+            select: {
+                usuarioId: true,
+                cursoId: true,
+                status: true,
+                created_at: true
             }
         })
 
@@ -106,5 +112,18 @@ export async function cancelarInscricaoEmCurso(currentUserId, searchedCursoId) {
         }
     })
 
-    return result
+    const updatedCursoUsuario = await Database.cursoUsuario.findMany({
+        where: {
+            usuarioId: currentUserId,
+            cursoId: searchedCursoId
+        },
+        select: {
+            usuarioId: true,
+            cursoId: true,
+            status: true,
+            updated_at: true
+        }
+    });
+
+    return updatedCursoUsuario
 }

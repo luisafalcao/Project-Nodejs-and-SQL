@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Curso from "./components/curso";
 import Navbar from "./components/navbar";
-// import { Container, Row, Col } from "react-grid-system";
 
 export default function Home() {
   const [cursos, setCursos] = useState([]);

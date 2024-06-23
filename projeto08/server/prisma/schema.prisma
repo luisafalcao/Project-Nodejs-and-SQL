@@ -8,35 +8,37 @@ datasource db {
 }
 
 model Curso {
-  id            Int             @id @default(autoincrement())
-  nome          String          @unique
+  id            Int               @id @default(autoincrement())
+  nome          String            @unique
   descricao     String
   capa          String
   inscricoes    Int
   inicio        DateTime?
-  created_at    DateTime?       @default(now()) @db.Timestamp(6)
-  updated_at    DateTime?       @default(now()) @db.Timestamp(6)
+  created_at    DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at    DateTime?         @default(now()) @db.Timestamp(6)
   usuarios      CursoUsuario[] 
 }
 
 model Usuario {
-  id            Int             @id @default(autoincrement())
+  id            Int               @id @default(autoincrement())
   nome          String
-  username      String          @unique
+  username      String            @unique
   senha         String
-  email         String          @unique
+  email         String            @unique
   nascimento    DateTime?       
-  created_at    DateTime?       @default(now()) @db.Timestamp(6)
-  updated_at    DateTime?       @default(now()) @db.Timestamp(6)
+  created_at    DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at    DateTime?         @default(now()) @db.Timestamp(6)
   cursos        CursoUsuario[] 
 }
 
 model CursoUsuario {
-  id        Int     @id @default(autoincrement())
-  status    String  @default("active")
-  usuario   Usuario @relation(fields: [usuarioId], references: [id])
-  usuarioId Int     
-  curso     Curso   @relation(fields: [cursoId], references: [id])
-  cursoId   Int    
+  id            Int               @id @default(autoincrement())
+  status        String            @default("active")
+  usuario       Usuario           @relation(fields: [usuarioId], references: [id])
+  usuarioId     Int     
+  curso         Curso             @relation(fields: [cursoId], references: [id])
+  cursoId       Int    
+  created_at    DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at    DateTime?         @default(now()) @db.Timestamp(6)
   @@unique([usuarioId, cursoId])
 }

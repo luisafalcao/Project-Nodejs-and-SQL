@@ -47,21 +47,14 @@ app.get("/", async (req, res) => {
 app.get("/:idUsuario", isAuth, async (req, res) => {
     try {
         const searchedId = parseInt(req.params.idUsuario)
-
         const currentUserId = req.user.id
-        const data = await getCursoByUsuario({ currentUserId })
+
+        const data = await getCursoByUsuario(searchedId)
 
         if (currentUserId !== searchedId) {
             res.status(403).json({ message: `Você não tem permissão para visualizar os cursos do usuário deste usuário` })
             return
         }
-
-        // const cursos = data.map(curso => {
-        //     const { created_at, updated_at, ...rest } = curso;
-        //     return {
-        //         ...rest
-        //     }
-        // });
 
         res.status(200).json({
             data: {

@@ -36,7 +36,7 @@ router.get("/", isAuth, async (req, res) => {
             }
         })
 
-        const cursos = await Promise.all(data.map(async (curso) => {
+        const cursosDisponiveis = await Promise.all(data.map(async (curso) => {
             const { usuarios, inicio, created_at, updated_at, ...rest } = curso;
             const data_inicio = await converterFormatoData(inicio)
 
@@ -48,27 +48,13 @@ router.get("/", isAuth, async (req, res) => {
         }));
 
         res.status(200).json({
-            data: cursos
+            data: cursosDisponiveis
         });
     } catch (err) {
         res.status(500).json({ message: err.message })
         return
     }
 });
-
-// CRIAR CURSO "/cursos/criar-curso" ---- comentar
-// router.post("/criar-curso", async (req, res) => {
-//     try {
-//         const { nome, descricao, capa, inscricoes, inicio } = req.body;
-
-//         const novoCurso = await createCurso({ nome, descricao, capa, inscricoes, inicio });
-
-//         res.status(201).json({ message: "Curso criado com sucesso!", curso: novoCurso });
-//     } catch (error) {
-//         console.log("erro:", error.message)
-//         res.status(400).json({ message: error.message });
-//     }
-// })
 
 // FAZER INSCRIÇÃO "/cursos/:idCurso"
 router.post("/:idCurso", isAuth, async (req, res) => {
@@ -96,62 +82,28 @@ router.patch("/:idCurso", isAuth, async (req, res) => {
 
         const cancelamento = await cancelarInscricaoEmCurso(currentUserId, searchedCursoId)
 
-        res.status(200).json({ message: "Inscrição cancelada." })
+        res.status(200).json({
+            message: "Inscrição cancelada.",
+            cancelamento
+        })
     } catch (error) {
         console.error(error)
         res.status(400).json({ message: error.message })
     }
 })
 
+export default router
 
-
-// FAZER INSCRIÇÃO "/cursos/:idCurso"
-// router.post("/:idCurso", isAuth, async (req, res) => {
+// CRIAR CURSO "/cursos/criar-curso" ---- comentar
+// router.post("/criar-curso", async (req, res) => {
 //     try {
-//         const searchedCursoId = parseInt(req.params.idCurso)
-//         const currentUserId = req.user.id
+//         const { nome, descricao, capa, inscricoes, inicio } = req.body;
 
-//         const curso = await getCurso({ id: searchedCursoId })
+//         const novoCurso = await createCurso({ nome, descricao, capa, inscricoes, inicio });
 
-//         if (!curso) {
-//             res.status(404).json({ message: "O curso procurado não existe." })
-//             return
-//         }
-
-//         const inscricoesAtuais = await Database.curso.findUnique({
-//             where: {
-//                 id: parseInt(searchedCursoId),
-//             },
-//             select: {
-//                 usuarios: {
-//                     where: {
-//                         id: parseInt(currentUserId),
-//                     },
-//                     select: {
-//                         id: true,
-//                     },
-//                 },
-//             },
-//         });
-
-//         if (inscricoesAtuais.usuarios.length > 0) {
-//             const result = await alterarInscricao(currentUserId, searchedCursoId, "disconnect", "decrement")
-//             res.status(404).json({ message: "Inscrição cancelada." })
-//             return
-//         }
-
-//         const result = await alterarInscricao(currentUserId, searchedCursoId, "connect", "increment")
-
-//         res.status(200).json({
-//             message: "Inscrição realizada com sucesso!",
-//             usuario: result.updatedUsuario,
-//             curso: result.updatedCurso,
-//         });
-
+//         res.status(201).json({ message: "Curso criado com sucesso!", curso: novoCurso });
 //     } catch (error) {
-//         console.error(error)
-//         res.status(400).json({ message: error.message })
+//         console.log("erro:", error.message)
+//         res.status(400).json({ message: error.message });
 //     }
 // })
-
-export default router
