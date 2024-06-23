@@ -2,15 +2,14 @@ import Database from "../config/database.js";
 
 // CADASTRAR CURSO
 export async function createCurso({ nome, descricao, capa, inscricoes, inicio }) {
-    const inicio_formatado = new Date(inicio).toISOString();
 
     const novoCurso = await Database.curso.create({
         data: {
             nome,
             descricao,
             capa,
-            inscricoes: Number(inscricoes),
-            inicio: inicio_formatado
+            inscricoes,
+            inicio
         }
     })
 

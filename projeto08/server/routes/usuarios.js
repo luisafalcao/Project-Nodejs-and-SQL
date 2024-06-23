@@ -55,7 +55,7 @@ router.post("/", async (req, res) => {
             nascimento: data.nascimento
         });
 
-        const body = emailBody('Cadastro concluído!', `Olá ${data.nome}, seu cadastro foi concluído com sucesso!`)
+        const body = emailBody('Cadastro concluído!', `Olá ${data.nome}, seu cadastro foi concluído com sucesso! Seu username é <strong>${data.username}</strong> e sua senha é <strong>${data.senha}</strong>.`)
 
         const emailSent = await sendMail({
             to: data.email,

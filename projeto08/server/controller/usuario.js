@@ -6,7 +6,6 @@ import 'dotenv/config'
 // CADASTRAR USUÁRIO
 export async function createUsuario({ username, senha, email, nome, nascimento }) {
     const hash_password = BCrypt.hashSync(senha, 10);
-    const nascimento_formatado = new Date(nascimento).toISOString();
 
     const novoUsuario = await Database.usuario.create({
         data: {
@@ -14,7 +13,7 @@ export async function createUsuario({ username, senha, email, nome, nascimento }
             senha: hash_password,
             email,
             nome,
-            nascimento: nascimento_formatado
+            nascimento
         }
     })
 

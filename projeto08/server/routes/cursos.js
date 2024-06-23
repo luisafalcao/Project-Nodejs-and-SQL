@@ -1,4 +1,3 @@
-// import JWT from "jsonwebtoken";
 import { Router } from "express";
 import Database from "../config/database.js"
 import { getCurso } from "../controller/curso.js"
@@ -10,7 +9,16 @@ const router = Router();
 // GET CURSOS "/cursos"
 router.get("/", async (req, res) => {
     try {
-        const cursos = await Database.curso.findMany()
+        const cursos = await Database.curso.findMany({
+            select: {
+                nome: true,
+                descricao: true,
+                inicio: true
+            },
+            orderBy: {
+                nome: 'asc'
+            }
+        })
 
         res.status(200).json({
             data: cursos
@@ -43,6 +51,18 @@ router.post("/:idCurso", isAuth, async (req, res) => {
             return
         }
 
+        // const usuarioNaoInscrito = await Database.usuario.findMany({
+        //     where: {
+        //         OR: [{}]
+        //     }
+        // })
+
+        const records = await prisma.record.findMany({
+            where: {
+                OR: [{ myColumn: null }, { myColumn: "" }],
+            },
+        });
+
         const updatedUsuario = await Database.usuario.update({
             where: { id: currentUserId },
             data: {
@@ -59,7 +79,7 @@ router.post("/:idCurso", isAuth, async (req, res) => {
         });
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(400).json({ message: error.message })
     }
 })
 

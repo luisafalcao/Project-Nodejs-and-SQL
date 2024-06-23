@@ -13,7 +13,7 @@ model curso {
   descricao     String
   capa          String
   inscricoes    Int
-  inicio        DateTime?       @db.Date
+  inicio        String
   created_at    DateTime?       @default(now()) @db.Timestamp(6)
   updated_at    DateTime?       @default(now()) @db.Timestamp(6)
   usuarios      usuario[]
@@ -25,7 +25,7 @@ model usuario {
   username      String          @unique
   senha         String
   email         String          @unique
-  nascimento    DateTime?       @db.Date
+  nascimento    String       
   status        Boolean?        @default(true)
   created_at    DateTime?       @default(now()) @db.Timestamp(6)
   updated_at    DateTime?       @default(now()) @db.Timestamp(6)
