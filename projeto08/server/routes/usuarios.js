@@ -2,10 +2,11 @@ import { Router } from "express";
 import Database from "../config/database.js"
 import { getUsuario, createUsuario, changePassword, login } from "../controller/usuario.js"
 import { sendMail, emailBody } from "../config/mailer.js";
+import isAuth from "../config/auth.js";
 
 const router = Router()
 
-// CADASTRAR USUÁRIO "/usuarios"
+// ROTA PARA CADASTRAR USUÁRIO "/usuarios"
 router.post("/", async (req, res) => {
     try {
         const data = req.body;
@@ -26,16 +27,16 @@ router.post("/", async (req, res) => {
             }
         })
 
+        if (emailExistente.length) {
+            res.status(400).json({ message: "O email inserido já está sendo utilizado." })
+            return
+        }
+
         const usernameExistente = await Database.usuario.findMany({
             where: {
                 username: data.username
             }
         })
-
-        if (emailExistente.length) {
-            res.status(400).json({ message: "O email inserido já está sendo utilizado." })
-            return
-        }
 
         if (usernameExistente.length) {
             res.status(400).json({ message: "O username inserido já está sendo utilizado." })
@@ -68,15 +69,20 @@ router.post("/", async (req, res) => {
             return error.message
         })
 
-        res.status(200).json({ message: "Usuário cadastrado com sucesso!", data: novoUsuario, emailSent })
+        res.status(200).json({
+            message: "Usuário cadastrado com sucesso!",
+            novoUsuario,
+            emailSent
+        })
         return
     } catch (error) {
-        res.status(400).json({ message: error.message })
+        console.error(error.message)
+        res.status(400).json({ message: "Ocorreu um erro no servidor." })
         return
     }
 })
 
-// FAZER LOGIN "/usuarios/login"
+// ROTA PARA FAZER LOGIN "/usuarios/login"
 router.post("/login", async (req, res) => {
     try {
         const data = req.body
@@ -109,17 +115,18 @@ router.post("/login", async (req, res) => {
         res.cookie('x-auth', user)
 
         res.status(200).json({
-            message: "Login feito com sucesso!"
+            message: "Login realizado com sucesso!"
         })
 
     } catch (error) {
-        res.status(400).json({ message: error.message })
+        console.error(error.message)
+        res.status(400).json({ message: "Ocorreu um erro no servidor." })
         return
     }
 })
 
-// RECUPERAR SENHA "/usuarios/recuperar-senha"
-router.post("/recuperar-senha", async (req, res) => {
+// ROTA PARA RECUPERAR SENHA "/usuarios/recuperar-senha"
+router.post("/recuperar-senha", isAuth, async (req, res) => {
     try {
         const data = req.body
 
@@ -139,7 +146,7 @@ router.post("/recuperar-senha", async (req, res) => {
 
         await changePassword(user.id, novaSenha)
 
-        const body = emailBody('Recuperação de senha', `Olá ${user.name}, você solicitou uma recuperação de senha! Sua nova senha é <strong>${novaSenha}</strong>.`)
+        const body = emailBody('Recuperação de senha', `Olá ${user.nome}, você solicitou uma recuperação de senha! Sua nova senha é <strong>${novaSenha}</strong>.`)
 
         const emailSent = await sendMail({
             to: user.email,

@@ -18,9 +18,9 @@ app.use(cookieParser())
 
 Router(app);
 
-// HOME "/"
+// ROTA DE TODOS OS CURSOS (HOME) "/"
 app.get("/", async (req, res) => {
-    const cursos = await prisma.curso.findMany({
+    const data = await prisma.curso.findMany({
         where: {
             inicio: {
                 gte: new Date()
@@ -28,7 +28,7 @@ app.get("/", async (req, res) => {
         }
     })
 
-    const datasFormatadas = await Promise.all(cursos.map(async (curso) => {
+    const cursos = await Promise.all(data.map(async (curso) => {
         const { usuarios, inicio, created_at, updated_at, ...rest } = curso;
         const data_inicio = await converterFormatoData(inicio)
 
@@ -39,11 +39,12 @@ app.get("/", async (req, res) => {
     }));
 
     res.status(200).json({
-        data: datasFormatadas
+        message: "Todos os cursos disponíveis",
+        cursos
     })
 })
 
-// GET CURSOS POR USUÁRIO "/:idUsuario"
+// ROTA DOS CURSOS POR USUÁRIO "/:idUsuario"
 app.get("/:idUsuario", isAuth, async (req, res) => {
     try {
         const searchedId = parseInt(req.params.idUsuario)
@@ -57,11 +58,9 @@ app.get("/:idUsuario", isAuth, async (req, res) => {
         }
 
         res.status(200).json({
-            data: {
-                data,
-                usuario: {
-                    name: req.user.nome
-                }
+            data,
+            usuario: {
+                name: req.user.nome
             }
         })
         return
@@ -71,6 +70,7 @@ app.get("/:idUsuario", isAuth, async (req, res) => {
     }
 })
 
+// ROTA PARA CONFIRMAR SE USUÁRIO ESTÁ LOGADO
 app.get("/logado", isAuth, (req, res) => {
     res.status(200).json({
         message: "Você está logado!",
@@ -81,3 +81,16 @@ app.get("/logado", isAuth, (req, res) => {
 app.listen(port, () => {
     console.log(`Servidor em http://localhost:${port}`)
 })
+
+// LIMPAR DATABASE "/" --dev
+// app.delete("/", async (req, res) => {
+//     const cursoUsuarioDeletados = await prisma.cursoUsuario.deleteMany({})
+//     const cursosDeletados = await prisma.curso.deleteMany({})
+//     const usuariosDeletados = await prisma.usuario.deleteMany({})
+
+//     res.status(200).json({
+//         cursoUsuarios: cursoUsuarioDeletados,
+//         cursos: cursosDeletados,
+//         usuarios: usuariosDeletados
+//     })
+// })

@@ -1,7 +1,7 @@
 import Database from "../config/database.js";
 import { converterFormatoData } from "../config/utils.js";
 
-// CADASTRAR CURSO
+// CADASTRAR NOVO CURSO --dev
 export async function createCurso({ nome, descricao, capa, inscricoes, inicio }) {
     try {
         const data_inicio = await converterFormatoData(inicio)
@@ -18,82 +18,131 @@ export async function createCurso({ nome, descricao, capa, inscricoes, inicio })
 
         return novoCurso
     } catch (error) {
-        console.error('Erro ao criar curso.', error);
-        throw new Error('Erro ao criar curso.');
+        console.error(error.message);
+        throw new Error('Erro ao cadastrar curso.');
     }
 }
 
-// GET CURSO
+// BUSCAR CURSO(S)
 export async function getCurso(identificador) {
-    if (!identificador || Object.keys(identificador).length === 0) {
-        const cursos = await Database.curso.findMany();
-        return cursos
-    } else {
-        const [key, value] = Object.entries(identificador)[0]
-        const curso = await Database.curso.findUnique({
-            where: {
-                [key]: value
-            }
-        })
-        return curso
-    }
-
-}
-
-// GET CURSO POR USUÁRIO
-export async function getCursoByUsuario(id) {
     try {
-        const cursosInscritos = await Database.cursoUsuario.findMany({
-            where: {
-                AND: {
-                    usuarioId: {
-                        equals: id
-                    },
-                    status: {
-                        equals: "inscrito"
-                    }
+        if (!identificador || Object.keys(identificador).length === 0) {
+            const cursos = await Database.curso.findMany();
+            return cursos
+        } else {
+            const [key, value] = Object.entries(identificador)[0]
+            const curso = await Database.curso.findUnique({
+                where: {
+                    [key]: value
                 }
-            }
-        });
-
-        const cursosCancelados = await Database.cursoUsuario.findMany({
-            where: {
-                AND: {
-                    usuarioId: {
-                        equals: id
-                    },
-                    status: {
-                        equals: "cancelado"
-                    }
-                }
-            }
-        })
-
-        return { cursosInscritos, cursosCancelados };
+            })
+            return curso
+        }
     } catch (error) {
-        console.error(error);
-        throw error;
+        console.error(error.message);
+        throw new Error('Erro ao buscar cursos.');
+    }
+
+}
+
+// BUSCAR CURSO POR USUÁRIO
+export async function getCursoByUsuario(busca, currentUserId) {
+    try {
+        let cursosInscritos
+        let cursosCancelados
+        let cursosDisponiveis
+
+        // cursos inscritos
+        if (busca === "inscritos") {
+            cursosInscritos = await Database.cursoUsuario.findMany({
+                where: {
+                    usuarioId: currentUserId,
+                    status: "inscrito"
+                },
+                include: {
+                    curso: true,
+                },
+            })
+        }
+
+        // cursos cancelados
+        if (busca === "cancelados") {
+            cursosCancelados = await Database.cursoUsuario.findMany({
+                where: {
+                    AND: {
+                        usuarioId: {
+                            equals: id
+                        },
+                        status: {
+                            equals: "cancelado"
+                        }
+                    }
+                }
+            })
+        }
+
+        // cursos disponiveis
+        if (busca === "disponiveis") {
+            cursosDisponiveis = await Database.curso.findMany({
+                where: {
+                    NOT: {
+                        usuarios: {
+                            some: {
+                                usuarioId: currentUserId,
+                            },
+                        },
+                    },
+                },
+            })
+        }
+
+        return { cursosInscritos, cursosCancelados, cursosDisponiveis };
+    } catch (error) {
+        console.error(error.message);
+        throw new Error('Erro ao buscar cursos.');
     }
 }
 
-// INSCREVER EM CURSO
+// FILTRAR CURSO
+export async function filtrarCurso(busca) {
+    let filter = {}
+
+    filter = {
+        nome: {
+            contains: busca
+        }
+    }
+
+    const result = await Database.curso.findMany({
+        where: filter
+    })
+
+    return result
+}
+// INSCREVER USUÁRIO EM CURSO
 export async function inscreverEmCurso(currentUserId, searchedCursoId) {
     try {
+        const curso = await Database.curso.findUnique({
+            where: { id: searchedCursoId },
+        });
+
+        if (!curso) {
+            throw new Error(`Curso de ID ${searchedCursoId} não existe`);
+        }
+
         const result = await Database.cursoUsuario.create({
             data: {
-                usuarioId: currentUserId,
-                cursoId: searchedCursoId,
                 status: "inscrito",
-            },
-            select: {
-                usuarioId: true,
-                cursoId: true,
-                status: true,
-                created_at: true
+                usuario: {
+                    connect: { id: currentUserId },
+                },
+                curso: {
+                    connect: { id: searchedCursoId },
+                }
             }
         })
 
-        const updatedCurso = await Database.curso.update({
+        await Database.curso.update({
             where: {
                 id: searchedCursoId
             },
@@ -104,48 +153,56 @@ export async function inscreverEmCurso(currentUserId, searchedCursoId) {
             }
         })
 
-
-        return { result, updatedCurso };
+        return result;
     } catch (error) {
-        console.error('Erro na inscrição. Tente novamente.', error);
-        throw error;
+        console.error(error.message);
+        throw new Error('Erro na inscrição.');
     }
 }
 
 // CANCELAR INSCRIÇÃO EM CURSO
 export async function cancelarInscricaoEmCurso(currentUserId, searchedCursoId) {
-    const result = await Database.cursoUsuario.updateMany({
-        where: {
-            usuarioId: currentUserId,
-            cursoId: searchedCursoId
-        },
-        data: {
-            status: "cancelado"
-        }
-    })
+    try {
+        const cursoUsuarioEntry = await Database.cursoUsuario.findUnique({
+            where: {
+                usuarioId_cursoId: {
+                    usuarioId: currentUserId,
+                    cursoId: searchedCursoId,
+                },
+            },
+        });
 
-    const updatedCursoUsuario = await Database.cursoUsuario.findMany({
-        where: {
-            usuarioId: currentUserId,
-            cursoId: searchedCursoId
-        },
-        select: {
-            usuarioId: true,
-            cursoId: true,
-            status: true,
-            updated_at: true
+        if (!cursoUsuarioEntry) {
+            throw new Error("Você não está inscrito(a) neste curso");
         }
-    });
 
-    const updatedCurso = await Database.curso.update({
-        where: {
-            id: searchedCursoId
-        },
-        data: {
-            inscricoes: {
-                decrement: 1
+        const result = await Database.cursoUsuario.update({
+            where: {
+                usuarioId_cursoId: {
+                    usuarioId: currentUserId,
+                    cursoId: searchedCursoId,
+                },
+            },
+            data: {
+                status: "cancelado"
             }
-        }
-    })
-    return { updatedCursoUsuario, updatedCurso }
+        })
+
+        await Database.curso.update({
+            where: {
+                id: searchedCursoId
+            },
+            data: {
+                inscricoes: {
+                    decrement: 1
+                }
+            }
+        })
+
+        return result;
+    } catch (error) {
+        console.error(error.message);
+        throw new Error('Erro no cancelamento.');
+    }
+
 }
