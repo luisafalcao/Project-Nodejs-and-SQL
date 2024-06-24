@@ -56,6 +56,20 @@ router.get("/", isAuth, async (req, res) => {
     }
 });
 
+// CRIAR CURSO "/cursos/criar-curso" ---- comentar
+// router.post("/criar-curso", async (req, res) => {
+//     try {
+//         const { nome, descricao, capa, inscricoes, inicio } = req.body;
+
+//         const novoCurso = await createCurso({ nome, descricao, capa, inscricoes, inicio });
+
+//         res.status(201).json({ message: "Curso criado com sucesso!", curso: novoCurso });
+//     } catch (error) {
+//         console.log("erro:", error.message)
+//         res.status(400).json({ message: error.message });
+//     }
+// })
+
 // FAZER INSCRIÇÃO "/cursos/:idCurso"
 router.post("/:idCurso", isAuth, async (req, res) => {
     try {
@@ -94,16 +108,3 @@ router.patch("/:idCurso", isAuth, async (req, res) => {
 
 export default router
 
-// CRIAR CURSO "/cursos/criar-curso" ---- comentar
-// router.post("/criar-curso", async (req, res) => {
-//     try {
-//         const { nome, descricao, capa, inscricoes, inicio } = req.body;
-
-//         const novoCurso = await createCurso({ nome, descricao, capa, inscricoes, inicio });
-
-//         res.status(201).json({ message: "Curso criado com sucesso!", curso: novoCurso });
-//     } catch (error) {
-//         console.log("erro:", error.message)
-//         res.status(400).json({ message: error.message });
-//     }
-// })
