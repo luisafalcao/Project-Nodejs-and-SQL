@@ -93,7 +93,19 @@ export async function inscreverEmCurso(currentUserId, searchedCursoId) {
             }
         })
 
-        return result;
+        const updatedCurso = await Database.curso.update({
+            where: {
+                id: searchedCursoId
+            },
+            data: {
+                inscricoes: {
+                    increment: 1
+                }
+            }
+        })
+
+
+        return { result, updatedCurso };
     } catch (error) {
         console.error('Erro na inscrição. Tente novamente.', error);
         throw error;
@@ -125,5 +137,15 @@ export async function cancelarInscricaoEmCurso(currentUserId, searchedCursoId) {
         }
     });
 
-    return updatedCursoUsuario
+    const updatedCurso = await Database.curso.update({
+        where: {
+            id: searchedCursoId
+        },
+        data: {
+            inscricoes: {
+                decrement: 1
+            }
+        }
+    })
+    return { updatedCursoUsuario, updatedCurso }
 }

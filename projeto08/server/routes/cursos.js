@@ -80,7 +80,7 @@ router.post("/:idCurso", isAuth, async (req, res) => {
 
         res.status(200).json({
             message: "Inscrição realizada!",
-            inscricao
+            data: inscricao.result
         })
     } catch (error) {
         console.error(error)
@@ -98,7 +98,7 @@ router.patch("/:idCurso", isAuth, async (req, res) => {
 
         res.status(200).json({
             message: "Inscrição cancelada.",
-            cancelamento
+            data: cancelamento.updatedCursoUsuario
         })
     } catch (error) {
         console.error(error)
