@@ -1,0 +1,277 @@
+{
+	"info": {
+		"_postman_id": "28e6fe87-7f3a-4c65-9440-7d6daec26cc1",
+		"name": "Projeto08",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "34957166"
+	},
+	"item": [
+		{
+			"name": "Exibir todos os cursos",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJqb2FvIiwiZW1haWwiOiJqb2FvQG1haWwuY29tIiwiaWF0IjoxNzE5MTgyMzAwLCJleHAiOjE3MTkxODU5MDB9.dIZr-nMGNpjlQe0qGWb6OQ_SXskhcwcjqzLadx_JFE8"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{base_url}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Criar Usuário",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n            \"username\": \"sophia\",\n            \"senha\": \"123456\",\n            \"email\": \"sophia@mail.com\",\n            \"nome\": \"Sophia\",\n            \"nascimento\": \"10/07/2010\"\n        }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}usuarios"
+			},
+			"response": []
+		},
+		{
+			"name": "Fazer login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"joao@mail.com\",\n    \"senha\": \"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}usuarios/login"
+			},
+			"response": []
+		},
+		{
+			"name": "Recuperar senha",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OSwidXNlcm5hbWUiOiJvbGl2aWEiLCJlbWFpbCI6Im9saXZpYUBtYWlsLmNvbSIsImlhdCI6MTcxOTI0NDcxNywiZXhwIjoxNzE5MjQ4MzE3fQ._PhsVzcoBthu-oMcNhurPS-z8losQaXwmLFmknUw0Mg"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"olivia@mail.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}usuarios/recuperar-senha"
+			},
+			"response": []
+		},
+		{
+			"name": "Exibir todos os cursos disponíveis",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OSwidXNlcm5hbWUiOiJvbGl2aWEiLCJlbWFpbCI6Im9saXZpYUBtYWlsLmNvbSIsImlhdCI6MTcxOTI0NDg2NSwiZXhwIjoxNzE5MjQ4NDY1fQ.QRstBkkzeC91BVZU_WU4KCcQ9YLFNHQR06Tx1sjJYPQ"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": "{{base_url}}cursos"
+			},
+			"response": []
+		},
+		{
+			"name": "Busca de cursos",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OSwidXNlcm5hbWUiOiJvbGl2aWEiLCJlbWFpbCI6Im9saXZpYUBtYWlsLmNvbSIsImlhdCI6MTcxOTI1MDQ4MSwiZXhwIjoxNzE5MjU0MDgxfQ.qzpKYcbO7Z-SQGsOAGhmYqMm-VS6LNtaYuJJS16dK4I"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}cursos/?filter=",
+					"host": [
+						"{{base_url}}cursos"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "filter",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Exibir meus cursos",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OSwidXNlcm5hbWUiOiJvbGl2aWEiLCJlbWFpbCI6Im9saXZpYUBtYWlsLmNvbSIsImlhdCI6MTcxOTI0NDg2NSwiZXhwIjoxNzE5MjQ4NDY1fQ.QRstBkkzeC91BVZU_WU4KCcQ9YLFNHQR06Tx1sjJYPQ"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}6"
+			},
+			"response": []
+		},
+		{
+			"name": "Fazer inscrição",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OSwidXNlcm5hbWUiOiJvbGl2aWEiLCJlbWFpbCI6Im9saXZpYUBtYWlsLmNvbSIsImlhdCI6MTcxOTI0NDg2NSwiZXhwIjoxNzE5MjQ4NDY1fQ.QRstBkkzeC91BVZU_WU4KCcQ9YLFNHQR06Tx1sjJYPQ"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}cursos/5"
+			},
+			"response": []
+		},
+		{
+			"name": "Cancelar inscrição",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OSwidXNlcm5hbWUiOiJvbGl2aWEiLCJlbWFpbCI6Im9saXZpYUBtYWlsLmNvbSIsImlhdCI6MTcxOTI0NDg2NSwiZXhwIjoxNzE5MjQ4NDY1fQ.QRstBkkzeC91BVZU_WU4KCcQ9YLFNHQR06Tx1sjJYPQ"
+					}
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}cursos/8"
+			},
+			"response": []
+		},
+		{
+			"name": "CRIAR CURSO",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJsdWlzYSIsImVtYWlsIjoibHVpc2FAbWFpbC5jb20iLCJpYXQiOjE3MTkxNzk0NDQsImV4cCI6MTcxOTE4MzA0NH0.UNh2Sj1ZdSl-_2OlaRetm_vfy5T2pqpKoTxPMuA8ZM4"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nome\": \"Python\",\n    \"descricao\": \"Curso de Python\",\n    \"capa\": \"https://picsum.photos/200/300\",\n    \"inscricoes\": 0,\n    \"inicio\": \"12/02/2025\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}cursos/criar-curso"
+			},
+			"response": []
+		},
+		{
+			"name": "RESET DATABASE",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJqb2FvIiwiZW1haWwiOiJqb2FvQG1haWwuY29tIiwiaWF0IjoxNzE5MTgyMzAwLCJleHAiOjE3MTkxODU5MDB9.dIZr-nMGNpjlQe0qGWb6OQ_SXskhcwcjqzLadx_JFE8"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": "{{base_url}}"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "endpoint_table",
+			"value": "usuarios/",
+			"type": "string"
+		}
+	]
+}
